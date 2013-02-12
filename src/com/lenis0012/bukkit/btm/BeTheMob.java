@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.WeakHashMap;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.lenis0012.bukkit.btm.api.Api;
 import com.lenis0012.bukkit.btm.api.Disguise;
+import com.lenis0012.bukkit.btm.nms.ProtocolLibManager;
 
 public class BeTheMob extends JavaPlugin {
 	public int nextID = Short.MAX_VALUE;
@@ -21,6 +23,9 @@ public class BeTheMob extends JavaPlugin {
 	public List<String> hidden = new ArrayList<String>();
 	private BTMTaskManager task;
 	private static Api api;
+	public boolean protLib = false;
+	private ProtocolLibManager protocol;
+	public Logger log = Logger.getLogger("Minecraft");
 	
 	@Override
 	public void onEnable() {
@@ -34,6 +39,13 @@ public class BeTheMob extends JavaPlugin {
 		task.start();
 		
 		api = new Api(this);
+		
+		if(pm.getPlugin("ProtocolLib") != null) {
+			this.protocol = new ProtocolLibManager(this);
+			protocol.start();
+			this.protLib = true;
+			log.info("[BeTheMob] Hooked with ProtocolLib");
+		}
 	}
 	
 	@Override

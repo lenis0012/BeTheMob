@@ -9,7 +9,7 @@ import com.lenis0012.bukkit.btm.api.Disguise;
 
 public class PlayerInteractDisguisedEvent extends Event implements Cancellable {
 	private boolean cancelled = false;
-	private HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 	
 	@Override
 	public boolean isCancelled() {
@@ -23,6 +23,10 @@ public class PlayerInteractDisguisedEvent extends Event implements Cancellable {
 
 	@Override
 	public HandlerList getHandlers() {
+		return handlers;
+	}
+	
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 	

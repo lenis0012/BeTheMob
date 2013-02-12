@@ -2,6 +2,8 @@ package com.lenis0012.bukkit.btm.api;
 
 import java.util.List;
 
+import net.minecraft.server.v1_4_R1.DataWatcher;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -11,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.lenis0012.bukkit.btm.BTMTaskManager;
+import com.lenis0012.bukkit.btm.util.MetaDataUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
 import com.lenis0012.bukkit.btm.util.PacketUtil;
 
@@ -25,6 +28,7 @@ public class Disguise {
 	private Player player;
 	private List<String> extras;
 	private Movement movement;
+	private DataWatcher dw;
 	
 	public Disguise(Player player, int EntityID, Location loc, String name, int itemInHand) {
 		this.isPlayer = true;
@@ -97,10 +101,11 @@ public class Disguise {
 	 */
 	public void spawn(Player player) {
 		if(this.spawned) {
-			if(isPlayer)
-				NetworkUtil.sendPacket(PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand), player);
-			else
-				NetworkUtil.sendPacket(PacketUtil.getMobSpawnPacket(EntityID, loc, type, extras), player);
+			if(isPlayer) {
+				NetworkUtil.sendPacket(PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand, dw), player);
+			} else {
+				NetworkUtil.sendPacket(PacketUtil.getMobSpawnPacket(EntityID, loc, type, dw), player);
+			}
 		}
 	}
 	
@@ -110,16 +115,23 @@ public class Disguise {
 	 * @param world			World to recive packet
 	 */
 	public void spawn(World world) {
-		if(isPlayer)
-			NetworkUtil.sendGlobalPacket(PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand), world, player);
-		else
-			NetworkUtil.sendGlobalPacket(PacketUtil.getMobSpawnPacket(EntityID, loc, type, extras), world, player);
+		if(isPlayer) {
+			dw = new DataWatcher();
+			dw.a(0, Byte.valueOf((byte) 0));
+			dw.a(12, Integer.valueOf((int) 0));
+			NetworkUtil.sendGlobalPacket(PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand, dw), world, player);
+		} else {
+			dw = MetaDataUtil.getDataWatcher(type, extras);
+			NetworkUtil.sendGlobalPacket(PacketUtil.getMobSpawnPacket(EntityID, loc, type, dw), world, player);
+		}
 		
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
 			if(!player.getName().equals(this.player.getName())) {
 				Location l = player.getLocation();
-				if(l.distance(loc) < Bukkit.getViewDistance() * 10) {
-					BTMTaskManager.addPlayerToRender(player, this);
+				if(l.getWorld().getName().equals(world.getName())) {
+					if(l.distance(loc) < Bukkit.getViewDistance() * 10) {
+						BTMTaskManager.addPlayerToRender(player, this);
+					}
 				}
 			}
 		}
@@ -185,9 +197,8 @@ public class Disguise {
 	 * @param loc			Location to teleport to
 	 */
 	public void teleport(Location loc) {
-		this.despawn();
 		this.loc = loc;
-		this.spawn(loc.getWorld());
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityTeleportPacket(EntityID, loc), loc.getWorld(), this.player);
 		this.movement = new Movement(loc);
 	}
 	
@@ -212,6 +223,32 @@ public class Disguise {
 	 */
 	public void damage() {
 		NetworkUtil.sendGlobalPacket(PacketUtil.getArmAntimationPacket(EntityID, 2), loc.getWorld());
+	}
+	
+	/**
+	 * Make the entity crouch
+	 */
+	public void crouch() {
+		if(this.isPlayer) {
+			byte b = dw.getByte(0);
+			dw.watch(0, Byte.valueOf((byte)(b | 1 << 1)));
+			this.updateMetaData();
+		}
+	}
+	
+	/**
+	 * Make the entity uncrouch
+	 */
+	public void uncrouch() {
+		if(this.isPlayer) {
+			byte b = dw.getByte(0);
+			dw.watch(0, Byte.valueOf((byte)(b & (1 << 1 ^ 0xFFFFFFFF))));
+			this.updateMetaData();
+		}
+	}
+	
+	public void updateMetaData() {
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityMetadataPacket(EntityID, dw), loc.getWorld(), player);
 	}
 	
 	/**

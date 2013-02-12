@@ -11,6 +11,7 @@ import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.nms.PacketConnection;
@@ -66,13 +68,15 @@ public class BTMListener implements Listener {
 			}
 		}
 		
-		//Change the players connection
-		CraftServer cs = (CraftServer)Bukkit.getServer();
-		MinecraftServer server = cs.getServer();
-		CraftPlayer cp = (CraftPlayer)player;
-		EntityPlayer ep = cp.getHandle();
-		
-		ep.playerConnection = new PacketConnection(server, ep.playerConnection.networkManager, ep);
+		if(!plugin.protLib) {
+			//Change the players connection
+			CraftServer cs = (CraftServer)Bukkit.getServer();
+			MinecraftServer server = cs.getServer();
+			CraftPlayer cp = (CraftPlayer)player;
+			EntityPlayer ep = cp.getHandle();
+			
+			ep.playerConnection = new PacketConnection(server, ep.playerConnection.networkManager, ep);
+		}
 		
 	}
 	
@@ -190,6 +194,9 @@ public class BTMListener implements Listener {
 	
 	@EventHandler
 	public void onEntityDamage(EntityDamageEvent event) {
+		if(event.isCancelled())
+			return;
+		
 		Entity entity = event.getEntity();
 		BeTheMob plugin = BeTheMob.instance;
 		
@@ -201,6 +208,25 @@ public class BTMListener implements Listener {
 				Disguise dis = plugin.disguises.get(name);
 				dis.damage();
 			}
+		}
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+		if(event.isCancelled())
+			return;
+		
+		Player player = event.getPlayer();
+		BeTheMob plugin = BeTheMob.instance;
+		String name = player.getName();
+		
+		if(plugin.disguises.containsKey(name)) {
+			Disguise dis = plugin.disguises.get(name);
+			
+			if(event.isSneaking())
+				dis.crouch();
+			else
+				dis.uncrouch();
 		}
 	}
 }

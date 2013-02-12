@@ -1,7 +1,6 @@
 package com.lenis0012.bukkit.btm.util;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 import net.minecraft.server.v1_4_R1.DataWatcher;
 import net.minecraft.server.v1_4_R1.Packet;
@@ -13,6 +12,7 @@ import net.minecraft.server.v1_4_R1.Packet32EntityLook;
 import net.minecraft.server.v1_4_R1.Packet33RelEntityMoveLook;
 import net.minecraft.server.v1_4_R1.Packet34EntityTeleport;
 import net.minecraft.server.v1_4_R1.Packet35EntityHeadRotation;
+import net.minecraft.server.v1_4_R1.Packet40EntityMetadata;
 import net.minecraft.server.v1_4_R1.Packet55BlockBreakAnimation;
 
 import org.bukkit.Location;
@@ -31,15 +31,14 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet getMobSpawnPacket(int EntityID, Location loc, EntityType type, List<String> extras) {
+	public static Packet24MobSpawn getMobSpawnPacket(int EntityID, Location loc, EntityType type, DataWatcher tmp) {
 		//create epty packet
 		Packet24MobSpawn packet = new Packet24MobSpawn();
-		DataWatcher tmp = MetaDataUtil.getDataWatcher(type, extras);
 		
 		//generate data
-		int x = MathUtil.floor(loc.getX() * 32D);
-		int y = MathUtil.floor(loc.getY() * 32D);
-		int z = MathUtil.floor(loc.getZ() * 32D);
+		int x = MathUtil.floor(loc.getX() * 32.0D);
+		int y = MathUtil.floor(loc.getY() * 32.0D);
+		int z = MathUtil.floor(loc.getZ() * 32.0D);
 		byte yaw = getByteFromDegree(loc.getYaw());
 		byte pitch = getByteFromDegree(loc.getPitch());
 		
@@ -83,10 +82,9 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet getNamedEntitySpawnPacket(int EntityID, Location loc, String name, int item) {
+	public static Packet20NamedEntitySpawn getNamedEntitySpawnPacket(int EntityID, Location loc, String name, int item, DataWatcher tmp) {
 		//create empty packet
 		Packet20NamedEntitySpawn packet = new Packet20NamedEntitySpawn();
-		DataWatcher tmp = new DataWatcher();
 		
 		if(name.length() <= 16) {
 			name = ColorUtil.fixColors(name);
@@ -94,9 +92,9 @@ public class PacketUtil {
 			return null;
 		
 		//generate data
-		int x = MathUtil.floor(loc.getX() * 32D);
-		int y = MathUtil.floor(loc.getY() * 32D);
-		int z = MathUtil.floor(loc.getZ() * 32D);
+		int x = MathUtil.floor(loc.getX() * 32.0D);
+		int y = MathUtil.floor(loc.getY() * 32.0D);
+		int z = MathUtil.floor(loc.getZ() * 32.0D);
 		byte yaw = getByteFromDegree(loc.getYaw());
 		byte pitch = getByteFromDegree(loc.getPitch());
 		
@@ -109,10 +107,6 @@ public class PacketUtil {
 		packet.f = yaw;
 		packet.g = pitch;
 		packet.h = item;
-		
-		//writie data to DataWatcher
-		tmp.a(0, Byte.valueOf((byte) 0));
-		tmp.a(12, Integer.valueOf((int) 0));
 		
 		//insert DataWatcher to packet
 		try {
@@ -135,7 +129,7 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet getEntityLookPacket(int EntityID, Location loc) {
+	public static Packet32EntityLook getEntityLookPacket(int EntityID, Location loc) {
 		//generate data
 		byte yaw = getByteFromDegree(loc.getYaw());
 		byte pitch = getByteFromDegree(loc.getPitch());
@@ -154,7 +148,7 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet getEntityHeadRotationPacket(int EntityID, Location loc) {
+	public static Packet35EntityHeadRotation getEntityHeadRotationPacket(int EntityID, Location loc) {
 		//generate data
 		byte yaw = getByteFromDegree(loc.getYaw());
 		
@@ -171,7 +165,7 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet getDestroyEntityPacket(int EntityID) {
+	public static Packet29DestroyEntity getDestroyEntityPacket(int EntityID) {
 		//Create packet with data
 		Packet29DestroyEntity packet = new Packet29DestroyEntity(EntityID);
 		
@@ -216,7 +210,7 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet getArmAntimationPacket(int EntityID, int animation) {
+	public static Packet18ArmAnimation getArmAntimationPacket(int EntityID, int animation) {
 		//create empty packet
 		Packet18ArmAnimation packet = new Packet18ArmAnimation();
 		
@@ -234,7 +228,7 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet getBlockBreakAnimationPacket(int EntityID, Block block) {
+	public static Packet55BlockBreakAnimation getBlockBreakAnimationPacket(int EntityID, Block block) {
 		//generate data
 		int damage = block.getState().getRawData();
 		int x = block.getX();
@@ -247,11 +241,11 @@ public class PacketUtil {
 		return packet;
 	}
 	
-	public static Packet getEntityTeleportPacket(int EntityID, Location loc) {
+	public static Packet34EntityTeleport getEntityTeleportPacket(int EntityID, Location loc) {
 		//generate data
-		int x = MathUtil.floor(loc.getX());
-		int y = MathUtil.floor(loc.getY());
-		int z = MathUtil.floor(loc.getZ());
+		int x = MathUtil.floor(loc.getX() * 32.0D);
+		int y = MathUtil.floor(loc.getY() * 32.0D);
+		int z = MathUtil.floor(loc.getZ() * 32.0D);
 		byte yaw = getByteFromDegree(loc.getYaw());
 		byte pitch = getByteFromDegree(loc.getPitch());
 		
@@ -259,6 +253,10 @@ public class PacketUtil {
 		Packet34EntityTeleport packet = new Packet34EntityTeleport(EntityID, x, y, z, yaw, pitch);
 		
 		return packet;
+	}
+	
+	public static Packet40EntityMetadata getEntityMetadataPacket(int EntityID, DataWatcher tmp) {
+		return new Packet40EntityMetadata(EntityID, tmp, true);
 	}
 	
 	/*

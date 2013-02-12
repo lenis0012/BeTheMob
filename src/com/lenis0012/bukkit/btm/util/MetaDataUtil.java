@@ -73,7 +73,7 @@ public class MetaDataUtil {
 				tmp.a(16, Byte.valueOf((byte) 1));
 			}
 			
-			if(extra.toLowerCase().startsWith("-health:") && type == EntityType.ENDER_DRAGON) {
+			if(extra.toLowerCase().startsWith("-health:") && (type == EntityType.ENDER_DRAGON || type == EntityType.WITHER)) {
 				try {
 					int health = Integer.valueOf(extra.split(":")[1]);
 					

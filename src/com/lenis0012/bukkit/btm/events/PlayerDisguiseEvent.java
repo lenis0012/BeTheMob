@@ -8,7 +8,7 @@ import org.bukkit.event.HandlerList;
 
 public class PlayerDisguiseEvent extends Event implements Cancellable {
 	private boolean cancelled = false;
-	private HandlerList handlers = new HandlerList();
+	private static final HandlerList handlers = new HandlerList();
 	
 	@Override
 	public boolean isCancelled() {
@@ -22,6 +22,10 @@ public class PlayerDisguiseEvent extends Event implements Cancellable {
 
 	@Override
 	public HandlerList getHandlers() {
+		return handlers;
+	}
+	
+	public static HandlerList getHandlerList() {
 		return handlers;
 	}
 	
