@@ -18,6 +18,7 @@ import com.lenis0012.bukkit.btm.util.NetworkUtil;
 import com.lenis0012.bukkit.btm.util.PacketUtil;
 
 public class Disguise {
+	ArrayList<HerdEntity> herd = new ArrayList<HerdEntity>();
 	private boolean isPlayer = false;
 	private Location loc;
 	private String name;
@@ -256,5 +257,8 @@ public class Disguise {
 	 */
 	public void refreshMovement() {
 		this.movement = new Movement(loc);
+	}
+	public ArrayList<HerdEntity> getHerd() {
+		return herd;
 	}
 }
