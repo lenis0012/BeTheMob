@@ -208,6 +208,14 @@ public class BTMListener implements Listener {
 				Disguise dis = plugin.disguises.get(name);
 				dis.damage();
 			}
+		} 
+		if(event.getDamager() instanceof Player){
+			Player player = (Player)entity;
+			String name = player.getName();
+			Disguise dis = plugin.disguises.get(name);
+			for(HerdEntity he : dis.getHerd()) {
+				he.attack(entity);
+			}
 		}
 	}
 	
