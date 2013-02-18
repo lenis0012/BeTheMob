@@ -257,4 +257,10 @@ public class Disguise {
 	public void refreshMovement() {
 		this.movement = new Movement(loc);
 	}
+	/**
+	 * Get the type of the disguise
+	 */
+       public void getDisguiseType() {
+       		return type;
+       }
 }
