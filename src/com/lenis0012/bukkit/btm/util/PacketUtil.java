@@ -129,11 +129,12 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet32EntityLook getEntityLookPacket(int EntityID, Location loc) {
+	public static Packet32EntityLook getEntityLookPacket(int EntityID, Location loc, EntityType type) {
 		//generate data
 		byte yaw = getByteFromDegree(loc.getYaw());
 		byte pitch = getByteFromDegree(loc.getPitch());
-		
+		if(type == EntityType.ENDER_DRAGON) { yaw = (byte) (yaw - 128); }
+		if(type == EntityType.CHICKEN) { pitch = (byte) (pitch * -1); }
 		//create packet with data
 		Packet32EntityLook packet = new Packet32EntityLook(EntityID, yaw, pitch);
 		
@@ -148,10 +149,10 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet35EntityHeadRotation getEntityHeadRotationPacket(int EntityID, Location loc) {
+	public static Packet35EntityHeadRotation getEntityHeadRotationPacket(int EntityID, Location loc, EntityType type) {
 		//generate data
 		byte yaw = getByteFromDegree(loc.getYaw());
-		
+		if(type == EntityType.ENDER_DRAGON) { yaw = (byte) (yaw - 128); }
 		//Create packet with data
 		Packet35EntityHeadRotation packet = new Packet35EntityHeadRotation(EntityID, yaw);
 		
