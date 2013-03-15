@@ -24,6 +24,11 @@ import org.bukkit.entity.EntityType;
 
 import com.lenis0012.bukkit.btm.api.Movement;
 
+/**
+ * Generates all packets needed in this plugin
+ * 
+ * @author lenis0012
+ */
 public class PacketUtil {
 	/**
 	 * Get the packet to spawn animal npc's
@@ -185,9 +190,10 @@ public class PacketUtil {
 	 * 9 - Player allowed to eat
 	 * 10 - sheep eating grass
 	 * 
-	 * @param EntityID Entity id
-	 * @param status The status
-	 * @return Packet
+	 * @param EntityID 		Entity id
+	 * @param status 		The status
+	 * 
+	 * @return				Packet
 	 * 
 	 */
 	public static Packet38EntityStatus getEntityStatusPacket(int EntityID, byte status){
@@ -264,6 +270,14 @@ public class PacketUtil {
 		return packet;
 	}
 	
+	/**
+	 * Get packet to teleport an entity
+	 * 
+	 * @param EntityID		Entity id
+	 * @param loc			Location
+	 * 
+	 * @return				Packet
+	 */
 	public static Packet34EntityTeleport getEntityTeleportPacket(int EntityID, Location loc) {
 		//generate data
 		int x = MathUtil.floor(loc.getX() * 32.0D);
@@ -278,10 +292,27 @@ public class PacketUtil {
 		return packet;
 	}
 	
+	/**
+	 * Get packet to change metadata
+	 * 
+	 * @param EntityID		Entity id
+	 * @param tmp			New metadata
+	 * 
+	 * @return				Packet
+	 */
 	public static Packet40EntityMetadata getEntityMetadataPacket(int EntityID, DataWatcher tmp) {
 		return new Packet40EntityMetadata(EntityID, tmp, true);
 	}
 	
+	/**
+	 * Get packet to change entity equipment
+	 * 
+	 * @param EntityID		Entity id
+	 * @param slot			Slot id
+	 * @param item			Item
+	 * 
+	 * @return				Packet
+	 */
 	public static Packet5EntityEquipment getEntityEquipmentPacket(int EntityID, int slot, ItemStack item){
 		Packet5EntityEquipment packet;
 		packet = new Packet5EntityEquipment(EntityID, slot, item);

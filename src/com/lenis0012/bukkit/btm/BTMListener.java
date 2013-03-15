@@ -1,13 +1,8 @@
 package com.lenis0012.bukkit.btm;
 
-import net.minecraft.server.v1_4_R1.EntityPlayer;
-import net.minecraft.server.v1_4_R1.MinecraftServer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -77,11 +72,13 @@ public class BTMListener implements Listener {
 		
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
-			dis.changeItem(player, event.getNewSlot());
-			dis.changeArmor(player, 1);
-			dis.changeArmor(player, 2);
-			dis.changeArmor(player, 3);
-			dis.changeArmor(player, 4);
+			if(dis.isPlayer()) { //Only switch armour for player disguise types
+				dis.changeItem(player, event.getNewSlot());
+				dis.changeArmor(player, 1);
+				dis.changeArmor(player, 2);
+				dis.changeArmor(player, 3);
+				dis.changeArmor(player, 4);
+			}
 		}
 	}
 	
@@ -112,12 +109,7 @@ public class BTMListener implements Listener {
 		
 		if(!plugin.protLib) {
 			//Change the players connection
-			CraftServer cs = (CraftServer)Bukkit.getServer();
-			MinecraftServer server = cs.getServer();
-			CraftPlayer cp = (CraftPlayer)player;
-			EntityPlayer ep = cp.getHandle();
-			
-			ep.playerConnection = new PacketConnection(server, ep.playerConnection.networkManager, ep);
+			PacketConnection.hook(player);
 		}
 		
 	}

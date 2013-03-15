@@ -1,7 +1,14 @@
 package com.lenis0012.bukkit.btm.nms;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.logging.Logger;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -15,8 +22,79 @@ import net.minecraft.server.v1_4_R1.MinecraftServer;
 import net.minecraft.server.v1_4_R1.Packet14BlockDig;
 import net.minecraft.server.v1_4_R1.Packet7UseEntity;
 import net.minecraft.server.v1_4_R1.PlayerConnection;
+import net.minecraft.server.v1_4_R1.ServerConnection;
 
+@SuppressWarnings("unchecked")
 public class PacketConnection extends PlayerConnection {
+	private static Logger log = Logger.getLogger("Minecraft");
+	private static final List<PlayerConnection> connections;
+	
+	static {
+		CraftServer cs = (CraftServer)Bukkit.getServer();
+		MinecraftServer server = cs.getServer();
+		List<PlayerConnection> list = new ArrayList<PlayerConnection>();
+		try {
+			Field field = ServerConnection.class.getDeclaredField("d");
+			field.setAccessible(true);
+			list = (List<PlayerConnection>) field.get(server.ae());
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		connections = list;
+	}
+	
+	private static void transfer(Class<?> fromClass, Object from, Object to) {
+		if(fromClass == null)
+			return;
+		
+		try {
+			for(Field field : fromClass.getDeclaredFields()) {
+				field.setAccessible(true);
+				try {
+					field.set(to, field.get(from));
+				} catch(Exception e) {
+					continue;
+				}
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		transfer(fromClass.getSuperclass(), from, to);
+	}
+	
+	private static void transfer(Object from, Object to) {
+		transfer(from.getClass(), from, to);
+	}
+	
+	public static boolean canReplace(PlayerConnection con) {
+		return (con instanceof PacketConnection) || con.getClass().equals(PlayerConnection.class);
+	}
+	
+	public static void hook(Player player) {
+		EntityPlayer ep = ((CraftPlayer) player).getHandle();
+		CraftServer cs = (CraftServer)Bukkit.getServer();
+		MinecraftServer server = cs.getServer();
+		if(canReplace(ep.playerConnection)) {
+			PacketConnection newConnection = new PacketConnection(server, ep.playerConnection.networkManager, ep);
+			transfer(ep.playerConnection, newConnection);
+			ep.playerConnection = newConnection;
+			synchronized(connections) {
+				ListIterator<PlayerConnection> it = connections.listIterator();
+				while(it.hasNext()) {
+					if(it.next().player == ep) {
+						it.set(newConnection);
+						return;
+					}
+				}
+			}
+		} else {
+			log.severe("[BeTheMob] Could no replace playerConnection for player: " + player.getName());
+			log.severe("Please install ProtcolLib if this happends for more players!");
+		}
+	}
+	
 	public PacketConnection(MinecraftServer minecraftserver, INetworkManager inetworkmanager, EntityPlayer entityplayer) {
 		super(minecraftserver, inetworkmanager, entityplayer);
 	}

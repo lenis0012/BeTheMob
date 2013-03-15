@@ -20,6 +20,11 @@ import com.lenis0012.bukkit.btm.util.MetaDataUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
 import com.lenis0012.bukkit.btm.util.PacketUtil;
 
+/**
+ * Data wrapper of a player disguise
+ * 
+ * @author lenis0012
+ */
 public class Disguise {
 	private boolean isPlayer = false;
 	private Location loc;
@@ -55,7 +60,7 @@ public class Disguise {
 	/**
 	 * Check if the type is a player
 	 * 
-	 * @return			Tupe is a player
+	 * @return Tupe is a player
 	 */
 	public boolean isPlayer() {
 		return this.isPlayer;
@@ -64,7 +69,7 @@ public class Disguise {
 	/**
 	 * Get the location of the disguise
 	 * 
-	 * @return			Location
+	 * @return Location
 	 */
 	public Location getLocation() {
 		return this.loc;
@@ -73,7 +78,7 @@ public class Disguise {
 	/**
 	 * Get the disguised player
 	 * 
-	 * @return			Player
+	 * @return Player
 	 */
 	public Player getPlayer() {
 		return this.player;
@@ -82,7 +87,7 @@ public class Disguise {
 	/**
 	 * Get the custom entity id of the disguise
 	 * 
-	 * @return			EntityId
+	 * @return EntityId
 	 */
 	public int getEntityId() {
 		return this.EntityID;
@@ -91,7 +96,7 @@ public class Disguise {
 	/**
 	 * Set the location of the disguise
 	 * 
-	 * @param loc		Location
+	 * @param loc Location
 	 */
 	public void setLocation(Location loc) {
 		this.loc = loc;
@@ -100,7 +105,7 @@ public class Disguise {
 	/**
 	 * Spawn the disguise for a player
 	 * 
-	 * @param player		Player to recive spawn packet
+	 * @param player Player to recive spawn packet
 	 */
 	public void spawn(Player player) {
 		if(this.spawned) {
@@ -115,7 +120,7 @@ public class Disguise {
 	/**
 	 * Spawn the disguise for a world
 	 * 
-	 * @param world			World to recive packet
+	 * @param world World to recive packet
 	 */
 	public void spawn(World world) {
 		if(isPlayer) {
@@ -178,7 +183,7 @@ public class Disguise {
 	/**
 	 * Despawn the disguise in a custom world
 	 * 
-	 * @param world			World to despawn disguise
+	 * @param world	World to despawn disguise
 	 */
 	public void despawn(World world) {
 		NetworkUtil.sendGlobalPacket(PacketUtil.getDestroyEntityPacket(EntityID), world, player);
@@ -188,7 +193,7 @@ public class Disguise {
 	/**
 	 * Unload the disguise for a player
 	 * 
-	 * @param player		Player to unload disguise for
+	 * @param player Player to unload disguise for
 	 */
 	public void unLoadFor(Player player) {
 		NetworkUtil.sendPacket(PacketUtil.getDestroyEntityPacket(EntityID), player);
@@ -245,7 +250,7 @@ public class Disguise {
 	/**
 	 * Move the disguise to a new location
 	 * 
-	 * @param event			Event to get moving from
+	 * @param event Event to get moving from
 	 */
 	public void move(PlayerMoveEvent event) {
 		if(!spawned)
@@ -269,7 +274,7 @@ public class Disguise {
 	/**
 	 * Teleport the disguise
 	 * 
-	 * @param loc			Location to teleport to
+	 * @param loc Location to teleport to
 	 */
 	public void teleport(Location loc) {
 		this.loc = loc;
@@ -287,7 +292,7 @@ public class Disguise {
 	/**
 	 * Let the disguised player damage a block
 	 * 
-	 * @param block			Block to damage
+	 * @param block	Block to damage
 	 */
 	public void damageBlock(Block block) {
 		NetworkUtil.sendGlobalPacket(PacketUtil.getBlockBreakAnimationPacket(EntityID, block), loc.getWorld());

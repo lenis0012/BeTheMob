@@ -9,6 +9,11 @@ import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.btm.BeTheMob;
 
+/**
+ * API class from BeTheMob
+ * 
+ * @author lenis0012
+ */
 public class Api {
 	private BeTheMob plugin;
 	

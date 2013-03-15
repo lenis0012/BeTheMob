@@ -4,6 +4,11 @@ import net.minecraft.server.v1_4_R1.MathHelper;
 
 import org.bukkit.Location;
 
+/**
+ * Wrapper of entity movement
+ * 
+ * @author lenis0012
+ */
 public class Movement {
 	public int x, y, z;
 	private int oldX, oldY, oldZ;
@@ -17,7 +22,7 @@ public class Movement {
 	/**
 	 * Update the movement location
 	 * 
-	 * @param loc			New location
+	 * @param loc New location
 	 */
 	public void update(Location loc) {
 		int newX = MathHelper.floor(loc.getX() * 32D);
