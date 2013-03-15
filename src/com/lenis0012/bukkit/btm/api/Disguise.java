@@ -3,11 +3,14 @@ package com.lenis0012.bukkit.btm.api;
 import java.util.List;
 
 import net.minecraft.server.v1_4_R1.DataWatcher;
+import net.minecraft.server.v1_4_R1.ItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -135,7 +138,6 @@ public class Disguise {
 				}
 			}
 		}
-		
 		this.spawned = true;
 	}
 	
@@ -147,6 +149,31 @@ public class Disguise {
 		NetworkUtil.sendGlobalPacket(PacketUtil.getDestroyEntityPacket(EntityID), world, player);
 		this.spawned = false;
 	}
+	
+	/**
+	 * Kill the entity with the normal fall over animation
+	 * (Warning kills and despawns disguise)
+	 */
+	public void kill(){
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityStatusPacket(EntityID, (byte) 3), player.getWorld());
+	}
+	
+	/**
+	 * 'Ignites' the disguise
+	 */
+	public void ignite(){
+		dw.a(0, Byte.valueOf((byte) 1));
+		updateMetaData();
+	}
+	
+	/**
+	 * Stops fire on the entity
+	 */
+	public void extinguish(){
+		dw.a(0, Byte.valueOf((byte) 0));
+		updateMetaData();
+	}
+	
 	
 	/**
 	 * Despawn the disguise in a custom world
@@ -168,6 +195,54 @@ public class Disguise {
 	}
 	
 	/**
+	 * @param player Player to change disguises item in hand for
+	 * slot 0 is the item in hand
+	 */
+	public void changeItem(Player player, int new_slot){
+		org.bukkit.inventory.ItemStack bukkitstack = null;
+		if(player.getInventory().getItem(new_slot) == null){
+			bukkitstack = new org.bukkit.inventory.ItemStack(Material.AIR, 1);
+		}else{
+			bukkitstack = player.getInventory().getItem(new_slot);
+		}
+		ItemStack item = CraftItemStack.asNMSCopy(bukkitstack);
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityEquipmentPacket(EntityID, 0, item), player.getWorld());
+	}
+	
+	/**
+	 * @param player Player to set disguises armor
+	 * @param slot Which armour slot
+	 * 1 boots
+	 * 2 leggings
+	 * 3 chestplate
+	 * 4 helmet
+	 */
+	public void changeArmor(Player player, int slot){
+		org.bukkit.inventory.ItemStack bukkitstack = null;
+		switch(slot){
+		case 1:
+			bukkitstack = player.getInventory().getBoots();
+			break;
+		case 2:
+			bukkitstack = player.getInventory().getLeggings();
+			break;
+		case 3:
+			bukkitstack = player.getInventory().getChestplate();
+			break;
+		case 4:
+			bukkitstack = player.getInventory().getHelmet();
+			break;
+		default:
+			return;
+		}
+		if(bukkitstack == null){
+			bukkitstack = new org.bukkit.inventory.ItemStack(Material.AIR);
+		}
+		ItemStack item = CraftItemStack.asNMSCopy(bukkitstack);
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityEquipmentPacket(EntityID, slot, item), player.getWorld());
+	}
+	
+	/**
 	 * Move the disguise to a new location
 	 * 
 	 * @param event			Event to get moving from
@@ -186,9 +261,9 @@ public class Disguise {
 			movement.update(to);
 			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityMoveLookPacket(EntityID, movement, to, type), world, player);
 		} else
-			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityLookPacket(EntityID, to), world, player);
-		
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityHeadRotationPacket(EntityID, to), world, player);
+			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityLookPacket(EntityID, to, getDisguiseType()), world, player);
+		updateMetaData();
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityHeadRotationPacket(EntityID, to, getDisguiseType()), world, player);
 	}
 	
 	/**
@@ -260,7 +335,7 @@ public class Disguise {
 	/**
 	 * Get the type of the disguise
 	 */
-       public void getDisguiseType() {
+       public EntityType getDisguiseType() {
        		return type;
        }
 }

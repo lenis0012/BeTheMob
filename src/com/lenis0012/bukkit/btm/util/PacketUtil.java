@@ -3,6 +3,7 @@ package com.lenis0012.bukkit.btm.util;
 import java.lang.reflect.Field;
 
 import net.minecraft.server.v1_4_R1.DataWatcher;
+import net.minecraft.server.v1_4_R1.ItemStack;
 import net.minecraft.server.v1_4_R1.Packet;
 import net.minecraft.server.v1_4_R1.Packet18ArmAnimation;
 import net.minecraft.server.v1_4_R1.Packet20NamedEntitySpawn;
@@ -12,8 +13,10 @@ import net.minecraft.server.v1_4_R1.Packet32EntityLook;
 import net.minecraft.server.v1_4_R1.Packet33RelEntityMoveLook;
 import net.minecraft.server.v1_4_R1.Packet34EntityTeleport;
 import net.minecraft.server.v1_4_R1.Packet35EntityHeadRotation;
+import net.minecraft.server.v1_4_R1.Packet38EntityStatus;
 import net.minecraft.server.v1_4_R1.Packet40EntityMetadata;
 import net.minecraft.server.v1_4_R1.Packet55BlockBreakAnimation;
+import net.minecraft.server.v1_4_R1.Packet5EntityEquipment;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -174,6 +177,26 @@ public class PacketUtil {
 	}
 	
 	/**
+	 * 2 - entity hurt
+	 * 3 - entity killed
+	 * 6 - wolf taming
+	 * 7 - wolf tamed
+	 * 8 - wolf shaking water
+	 * 9 - Player allowed to eat
+	 * 10 - sheep eating grass
+	 * 
+	 * @param EntityID Entity id
+	 * @param status The status
+	 * @return Packet
+	 * 
+	 */
+	public static Packet38EntityStatus getEntityStatusPacket(int EntityID, byte status){
+		Packet38EntityStatus packet = new Packet38EntityStatus(EntityID, status);
+		return packet;
+	}
+	
+	
+	/**
 	 * Move an entity to a new location
 	 * 
 	 * @param EntityID		Entity id
@@ -214,7 +237,6 @@ public class PacketUtil {
 	public static Packet18ArmAnimation getArmAntimationPacket(int EntityID, int animation) {
 		//create empty packet
 		Packet18ArmAnimation packet = new Packet18ArmAnimation();
-		
 		packet.a = EntityID;
 		packet.b = animation;
 		
@@ -258,6 +280,12 @@ public class PacketUtil {
 	
 	public static Packet40EntityMetadata getEntityMetadataPacket(int EntityID, DataWatcher tmp) {
 		return new Packet40EntityMetadata(EntityID, tmp, true);
+	}
+	
+	public static Packet5EntityEquipment getEntityEquipmentPacket(int EntityID, int slot, ItemStack item){
+		Packet5EntityEquipment packet;
+		packet = new Packet5EntityEquipment(EntityID, slot, item);
+		return packet;
 	}
 	
 	/*

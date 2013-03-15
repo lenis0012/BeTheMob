@@ -9,16 +9,19 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -40,6 +43,45 @@ public class BTMListener implements Listener {
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
 			dis.move(event);
+
+		}
+		
+	}
+	
+	@EventHandler(priority=EventPriority.MONITOR)
+	public void onCombust(EntityCombustEvent event){
+		if(event.getEntityType() == EntityType.PLAYER){
+			Player player = (Player) event.getEntity();
+			String name = player.getName();
+			BeTheMob plugin = BeTheMob.instance;
+			if(plugin.disguises.containsKey(name)) {
+				final Disguise dis = plugin.disguises.get(name);
+				dis.ignite();
+				Bukkit.getScheduler().runTaskLater(BeTheMob.instance, new Runnable() {
+
+					@Override
+					public void run() {
+						dis.extinguish();
+						
+					}}, event.getDuration()*20);
+
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerSwapItem(PlayerItemHeldEvent event){
+		Player player = event.getPlayer();
+		String name = player.getName();
+		BeTheMob plugin = BeTheMob.instance;
+		
+		if(plugin.disguises.containsKey(name)) {
+			Disguise dis = plugin.disguises.get(name);
+			dis.changeItem(player, event.getNewSlot());
+			dis.changeArmor(player, 1);
+			dis.changeArmor(player, 2);
+			dis.changeArmor(player, 3);
+			dis.changeArmor(player, 4);
 		}
 	}
 	
@@ -172,10 +214,11 @@ public class BTMListener implements Listener {
 		
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
-			dis.despawn();
+			dis.kill();
 		}
 		
 	}
+	
 	
 	@EventHandler
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
