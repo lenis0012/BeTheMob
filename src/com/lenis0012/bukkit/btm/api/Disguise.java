@@ -151,6 +151,31 @@ public class Disguise {
 	}
 	
 	/**
+	 * Kill the entity with the normal fall over animation
+	 * (Warning kills and despawns disguise)
+	 */
+	public void kill(){
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityStatusPacket(EntityID, (byte) 3), player.getWorld());
+	}
+	
+	/**
+	 * 'Ignites' the disguise
+	 */
+	public void ignite(){
+		dw.a(0, Byte.valueOf((byte) 1));
+		updateMetaData();
+	}
+	
+	/**
+	 * Stops fire on the entity
+	 */
+	public void extinguish(){
+		dw.a(0, Byte.valueOf((byte) 0));
+		updateMetaData();
+	}
+	
+	
+	/**
 	 * Despawn the disguise in a custom world
 	 * 
 	 * @param world			World to despawn disguise
@@ -237,7 +262,7 @@ public class Disguise {
 			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityMoveLookPacket(EntityID, movement, to, type), world, player);
 		} else
 			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityLookPacket(EntityID, to, getDisguiseType()), world, player);
-		
+		updateMetaData();
 		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityHeadRotationPacket(EntityID, to, getDisguiseType()), world, player);
 	}
 	
