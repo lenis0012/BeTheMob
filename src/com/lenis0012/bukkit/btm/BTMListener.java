@@ -19,6 +19,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -40,6 +41,22 @@ public class BTMListener implements Listener {
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
 			dis.move(event);
+		}
+	}
+	
+	@EventHandler
+	public void onPlayerSwapItem(PlayerItemHeldEvent event){
+		Player player = event.getPlayer();
+		String name = player.getName();
+		BeTheMob plugin = BeTheMob.instance;
+		
+		if(plugin.disguises.containsKey(name)) {
+			Disguise dis = plugin.disguises.get(name);
+			dis.changeItem(player, event.getNewSlot());
+			dis.changeArmor(player, 1);
+			dis.changeArmor(player, 2);
+			dis.changeArmor(player, 3);
+			dis.changeArmor(player, 4);
 		}
 	}
 	
