@@ -56,15 +56,19 @@ public class MetaDataUtil {
 			}
 			
 			if(extra.equalsIgnoreCase("-sitting") && (type == EntityType.WOLF || type == EntityType.OCELOT)) {
-				tmp.a(16, Byte.valueOf((byte) 1));
+				tmp.a(16, Byte.valueOf((byte) 0x01));
 			}
 			
 			if(extra.equalsIgnoreCase("-angry") && type == EntityType.WOLF) {
-				tmp.a(16, Byte.valueOf((byte) 2));
+				tmp.a(16, Byte.valueOf((byte) 0x02));
+			}
+			
+			if(extra.equalsIgnoreCase("-angry") && type == EntityType.ENDERMAN) {
+				tmp.a(18, Byte.valueOf((byte) 1));
 			}
 			
 			if(extra.equalsIgnoreCase("-tamed") && (type == EntityType.WOLF || type == EntityType.OCELOT)) {
-				tmp.a(16, Byte.valueOf((byte) 4));
+				tmp.a(16, Byte.valueOf((byte) 0x04));
 				if(type == EntityType.OCELOT)
 					tmp.a(18, Byte.valueOf((byte) 3));
 			}

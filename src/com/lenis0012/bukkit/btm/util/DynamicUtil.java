@@ -1,5 +1,7 @@
 package com.lenis0012.bukkit.btm.util;
 
+import java.lang.reflect.Field;
+
 public class DynamicUtil {
 	public static final String MC_VERSION;
 	
@@ -50,6 +52,41 @@ public class DynamicUtil {
 			return Class.forName(CB_ROOT + "." + name);
 		} catch (ClassNotFoundException e) {
 			throw new IllegalArgumentException("Invalid CB class: " + name);
+		}
+	}
+	
+	public static Field getField(Class<?> fromClass, String name) {
+		try {
+			return fromClass.getDeclaredField(name);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T getValue(Object instance, Field field) {
+		try {
+			return (T) field.get(instance);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static void setValue(Object instance, Field field, Object value) {
+		try {
+			field.set(instance, value);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 }

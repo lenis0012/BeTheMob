@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.server.v1_5_R1.DataWatcher;
 import net.minecraft.server.v1_5_R1.ItemStack;
+import net.minecraft.server.v1_5_R1.Packet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -337,10 +338,23 @@ public class Disguise {
 	public void refreshMovement() {
 		this.movement = new Movement(loc);
 	}
+	
 	/**
 	 * Get the type of the disguise
 	 */
-       public EntityType getDisguiseType() {
-       		return type;
-       }
+    public EntityType getDisguiseType() {
+    	return type;
+    }
+    
+    public Packet getSpawnPacket() {
+    	if(isPlayer) {
+			dw = new DataWatcher();
+			dw.a(0, Byte.valueOf((byte) 0));
+			dw.a(12, Integer.valueOf((int) 0));
+			return PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand, dw);
+		} else {
+			dw = MetaDataUtil.getDataWatcher(type, extras);
+			return PacketUtil.getMobSpawnPacket(EntityID, loc, type, dw);
+		}
+    }
 }

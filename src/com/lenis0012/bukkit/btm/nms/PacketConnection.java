@@ -8,21 +8,26 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.btm.BeTheMob;
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.events.PlayerInteractDisguisedEvent;
+import com.lenis0012.bukkit.btm.util.NetworkUtil;
 
 import net.minecraft.server.v1_5_R1.EntityPlayer;
 import net.minecraft.server.v1_5_R1.INetworkManager;
 import net.minecraft.server.v1_5_R1.MinecraftServer;
 import net.minecraft.server.v1_5_R1.Packet14BlockDig;
+import net.minecraft.server.v1_5_R1.Packet53BlockChange;
 import net.minecraft.server.v1_5_R1.Packet7UseEntity;
 import net.minecraft.server.v1_5_R1.PlayerConnection;
 import net.minecraft.server.v1_5_R1.ServerConnection;
+import net.minecraft.server.v1_5_R1.WorldServer;
 
 @SuppressWarnings("unchecked")
 public class PacketConnection extends PlayerConnection {
@@ -141,23 +146,27 @@ public class PacketConnection extends PlayerConnection {
 	}
 	
 	@Override
-	public void a(final Packet14BlockDig packet) {
+	public void a(Packet14BlockDig packet) {
 		BeTheMob plugin = BeTheMob.instance;
 		super.a(packet);
 		
-		if(packet.e == 1) {
+		if(packet.e == 1 || packet.e == 2) {
 			String name = this.player.getBukkitEntity().getName();
 			if(plugin.disguises.containsKey(name)) {
-				final Disguise dis = plugin.disguises.get(this);
-				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-					@Override
-					public void run() {
-						dis.damageBlock(player.getBukkitEntity().getWorld().getBlockAt(packet.a, packet.b, packet.c));
-					}
-					
-				});
+				World world = this.player.getBukkitEntity().getWorld();
+				WorldServer ws = ((CraftWorld) world).getHandle();
+				int x = packet.a;
+				int y = packet.b;
+				int z = packet.c;
+				this.player.playerInteractManager.a(x, y, z);
+				if(ws.getTypeId(x, y, z) != 0) {
+					NetworkUtil.sendGlobalPacket(new Packet53BlockChange(x, y, z, ws), world);
+				}
+				
+				return;
 			}
 		}
+		
+		super.a(packet);
 	}
 }
