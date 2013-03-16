@@ -69,7 +69,7 @@ public class PacketUtil {
 		
 		//insert DataWatcher to packet
 		try {
-			Field field = packet.getClass().getDeclaredField("s");
+			Field field = packet.getClass().getDeclaredField("t");
 			field.setAccessible(true);
 			field.set(packet, tmp);
 			field.setAccessible(false);
@@ -224,7 +224,7 @@ public class PacketUtil {
 		if(type == EntityType.CHICKEN) { pitch = (byte) (pitch * -1); }
 		
 		if(x > 128 || x < -128 || y > 128 || y < -128 || z > 128 || z < -128)
-			return  getEntityTeleportPacket(EntityID, to);
+			return  getEntityTeleportPacket(EntityID, to, type);
 		
 		//create packet with data
 		Packet33RelEntityMoveLook packet = new Packet33RelEntityMoveLook(EntityID, x, y, z, yaw, pitch);
@@ -278,13 +278,16 @@ public class PacketUtil {
 	 * 
 	 * @return				Packet
 	 */
-	public static Packet34EntityTeleport getEntityTeleportPacket(int EntityID, Location loc) {
+	public static Packet34EntityTeleport getEntityTeleportPacket(int EntityID, Location loc, EntityType type) {
 		//generate data
 		int x = MathUtil.floor(loc.getX() * 32.0D);
 		int y = MathUtil.floor(loc.getY() * 32.0D);
 		int z = MathUtil.floor(loc.getZ() * 32.0D);
 		byte yaw = getByteFromDegree(loc.getYaw());
 		byte pitch = getByteFromDegree(loc.getPitch());
+		
+		if(type == EntityType.ENDER_DRAGON) { yaw = (byte) (yaw - 128); }
+		if(type == EntityType.CHICKEN) { pitch = (byte) (pitch * -1); }
 		
 		//create packet with data
 		Packet34EntityTeleport packet = new Packet34EntityTeleport(EntityID, x, y, z, yaw, pitch);

@@ -30,7 +30,7 @@ public class Disguise {
 	private Location loc;
 	private String name;
 	private int itemInHand;
-	private EntityType type = null;
+	private EntityType type;
 	private int EntityID;
 	private boolean spawned = false;
 	private Player player;
@@ -41,6 +41,7 @@ public class Disguise {
 	public Disguise(Player player, int EntityID, Location loc, String name, int itemInHand) {
 		this.isPlayer = true;
 		this.loc = loc;
+		this.type = EntityType.PLAYER;
 		this.EntityID = EntityID;
 		this.name = name;
 		this.itemInHand = itemInHand;
@@ -267,7 +268,6 @@ public class Disguise {
 			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityMoveLookPacket(EntityID, movement, to, type), world, player);
 		} else
 			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityLookPacket(EntityID, to, getDisguiseType()), world, player);
-		updateMetaData();
 		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityHeadRotationPacket(EntityID, to, getDisguiseType()), world, player);
 	}
 	
@@ -278,7 +278,7 @@ public class Disguise {
 	 */
 	public void teleport(Location loc) {
 		this.loc = loc;
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityTeleportPacket(EntityID, loc), loc.getWorld(), this.player);
+		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityTeleportPacket(EntityID, loc, type), loc.getWorld(), this.player);
 		this.movement = new Movement(loc);
 	}
 	

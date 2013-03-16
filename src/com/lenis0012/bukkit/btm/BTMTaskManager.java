@@ -60,7 +60,7 @@ public class BTMTaskManager {
 							Player check = dis.getPlayer();
 							if(!check.getName().equals(name)) {
 								dis.setLocation(check.getLocation());
-								NetworkUtil.sendPacket(PacketUtil.getEntityTeleportPacket(dis.getEntityId(), check.getLocation()), player);
+								NetworkUtil.sendPacket(PacketUtil.getEntityTeleportPacket(dis.getEntityId(), check.getLocation(), dis.getDisguiseType()), player);
 							}
 						}
 					}

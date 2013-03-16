@@ -86,7 +86,7 @@ public class MetaDataUtil {
 			}
 			
 			if(extra.toLowerCase().startsWith("-tag:")) {
-				String tag = extra.split(":", 1)[1];
+				String tag = extra.split(":")[1];
 				if(tag.length() > 16)
 					tag = tag.substring(0, 16);
 				
