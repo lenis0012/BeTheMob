@@ -84,6 +84,15 @@ public class MetaDataUtil {
 					tmp.a(16, Integer.valueOf((int) health));
 				} catch(Exception e) {}
 			}
+			
+			if(extra.toLowerCase().startsWith("-tag:")) {
+				String tag = extra.split(":", 1)[1];
+				if(tag.length() > 16)
+					tag = tag.substring(0, 16);
+				
+				tmp.a(5, String.valueOf(tag));
+				tmp.a(6, Byte.valueOf((byte) 1));
+			}
 		}
 		
 		//Zombie & PigZombie fix
