@@ -1,5 +1,5 @@
 name: BeTheMob
-version: 1.08
+version: 1.09
 main: com.lenis0012.bukkit.btm.BeTheMob
 softdepend: [ProtocolLib]
 commands:

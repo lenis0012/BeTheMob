@@ -29,8 +29,11 @@ import com.lenis0012.bukkit.btm.nms.PacketConnection;
 
 public class BTMListener implements Listener {
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
+		if(event.isCancelled())
+			return;
+		
 		Player player = event.getPlayer();
 		String name = player.getName();
 		BeTheMob plugin = BeTheMob.instance;
@@ -43,8 +46,11 @@ public class BTMListener implements Listener {
 		
 	}
 	
-	@EventHandler(priority=EventPriority.MONITOR)
-	public void onCombust(EntityCombustEvent event){
+	@EventHandler (priority=EventPriority.MONITOR)
+	public void onCombust(EntityCombustEvent event) {
+		if(event.isCancelled())
+			return;
+		
 		if(event.getEntityType() == EntityType.PLAYER){
 			Player player = (Player) event.getEntity();
 			String name = player.getName();
@@ -64,7 +70,7 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerSwapItem(PlayerItemHeldEvent event){
 		Player player = event.getPlayer();
 		String name = player.getName();
@@ -82,7 +88,7 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		BeTheMob plugin = BeTheMob.instance;
 		Player player = event.getPlayer();
@@ -114,7 +120,7 @@ public class BTMListener implements Listener {
 		
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		BeTheMob plugin = BeTheMob.instance;
 		Player player = event.getPlayer();
@@ -139,7 +145,7 @@ public class BTMListener implements Listener {
 		BTMTaskManager.notifyPlayerLeft(player);
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
@@ -157,8 +163,11 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if(event.isCancelled())
+			return;
+		
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
 		String name = player.getName();
@@ -170,8 +179,11 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
+		if(event.isCancelled())
+			return;
+		
 		PlayerAnimationType type = event.getAnimationType();
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
@@ -185,8 +197,11 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBlockDamage(BlockDamageEvent event) {
+		if(event.isCancelled())
+			return;
+		
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
@@ -198,7 +213,7 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		BeTheMob plugin = BeTheMob.instance;
@@ -212,7 +227,7 @@ public class BTMListener implements Listener {
 	}
 	
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
@@ -227,7 +242,7 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.isCancelled())
 			return;
