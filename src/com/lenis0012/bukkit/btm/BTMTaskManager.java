@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.server.v1_4_R1.EntityPlayer;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
+
 import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.btm.api.Disguise;
@@ -17,7 +15,7 @@ import com.lenis0012.bukkit.btm.util.PacketUtil;
 
 public class BTMTaskManager {
 	private BeTheMob plugin;
-	private int task, task2;
+	private int task;
 	private static HashMap<String, List<Disguise>> render = new HashMap<String, List<Disguise>>();
 	
 	public BTMTaskManager(BeTheMob plugin) {
@@ -70,22 +68,6 @@ public class BTMTaskManager {
 				}
 			}
 		}, 20, 20);
-		
-		task2 = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				if(BeTheMob.instance.protLib) {
-					for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-						CraftPlayer cp = (CraftPlayer) player;
-						EntityPlayer ep = cp.getHandle();
-						
-						ep.playerConnection.d();
-					}
-				}
-			}
-			
-		}, 1, 1);
 	}
 	
 	/**
@@ -156,6 +138,5 @@ public class BTMTaskManager {
 	
 	public void stop() {
 		Bukkit.getServer().getScheduler().cancelTask(task);
-		Bukkit.getServer().getScheduler().cancelTask(task2);
 	}
 }

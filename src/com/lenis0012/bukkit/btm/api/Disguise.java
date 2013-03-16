@@ -2,15 +2,15 @@ package com.lenis0012.bukkit.btm.api;
 
 import java.util.List;
 
-import net.minecraft.server.v1_4_R1.DataWatcher;
-import net.minecraft.server.v1_4_R1.ItemStack;
+import net.minecraft.server.v1_5_R1.DataWatcher;
+import net.minecraft.server.v1_5_R1.ItemStack;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_4_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
