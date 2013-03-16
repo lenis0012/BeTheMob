@@ -1,9 +1,9 @@
 package com.lenis0012.bukkit.btm.nms;
 
-import net.minecraft.server.v1_4_R1.EntityPlayer;
+import net.minecraft.server.v1_5_R1.EntityPlayer;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.Packets;

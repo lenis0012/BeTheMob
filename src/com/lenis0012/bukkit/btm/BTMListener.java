@@ -1,13 +1,13 @@
 package com.lenis0012.bukkit.btm;
 
-import net.minecraft.server.v1_4_R1.EntityPlayer;
-import net.minecraft.server.v1_4_R1.MinecraftServer;
+import net.minecraft.server.v1_5_R1.EntityPlayer;
+import net.minecraft.server.v1_5_R1.MinecraftServer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_4_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_4_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_5_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -34,8 +34,11 @@ import com.lenis0012.bukkit.btm.nms.PacketConnection;
 
 public class BTMListener implements Listener {
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerMove(PlayerMoveEvent event) {
+		if(event.isCancelled()){
+			return;
+		}
 		Player player = event.getPlayer();
 		String name = player.getName();
 		BeTheMob plugin = BeTheMob.instance;
@@ -43,13 +46,15 @@ public class BTMListener implements Listener {
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
 			dis.move(event);
-
 		}
 		
 	}
 	
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void onCombust(EntityCombustEvent event){
+		if(event.isCancelled() || event.getDuration() == 0){
+			return;
+		}
 		if(event.getEntityType() == EntityType.PLAYER){
 			Player player = (Player) event.getEntity();
 			String name = player.getName();
@@ -69,7 +74,7 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerSwapItem(PlayerItemHeldEvent event){
 		Player player = event.getPlayer();
 		String name = player.getName();
@@ -165,8 +170,11 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if(event.isCancelled()){
+			return;
+		}
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
 		String name = player.getName();
@@ -178,8 +186,11 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerAnimation(PlayerAnimationEvent event) {
+		if(event.isCancelled()){
+			return;
+		}
 		PlayerAnimationType type = event.getAnimationType();
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
@@ -193,8 +204,11 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onBlockDamage(BlockDamageEvent event) {
+		if(event.isCancelled()){
+			return;
+		}
 		Block block = event.getBlock();
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
@@ -206,7 +220,7 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		BeTheMob plugin = BeTheMob.instance;
@@ -220,7 +234,7 @@ public class BTMListener implements Listener {
 	}
 	
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
@@ -235,7 +249,7 @@ public class BTMListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority=EventPriority.MONITOR)
 	public void onEntityDamage(EntityDamageEvent event) {
 		if(event.isCancelled())
 			return;

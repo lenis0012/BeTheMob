@@ -2,7 +2,7 @@ package com.lenis0012.bukkit.btm.util;
 
 import java.util.List;
 
-import net.minecraft.server.v1_4_R1.DataWatcher;
+import net.minecraft.server.v1_5_R1.DataWatcher;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -21,7 +21,7 @@ public class MetaDataUtil {
 		DataWatcher tmp = new DataWatcher();
 		boolean changeAge = true;
 		
-		tmp.a(0, Byte.valueOf((byte) 0));
+		//tmp.a(0, Byte.valueOf((byte) 0));
 		
 		//bat fix
 		if(type == EntityType.BAT)

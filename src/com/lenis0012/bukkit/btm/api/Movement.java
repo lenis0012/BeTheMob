@@ -1,6 +1,6 @@
 package com.lenis0012.bukkit.btm.api;
 
-import net.minecraft.server.v1_4_R1.MathHelper;
+import net.minecraft.server.v1_5_R1.MathHelper;
 
 import org.bukkit.Location;
 
