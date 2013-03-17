@@ -351,10 +351,10 @@ public class Disguise {
 			dw = new DataWatcher();
 			dw.a(0, Byte.valueOf((byte) 0));
 			dw.a(12, Integer.valueOf((int) 0));
-			return PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand, dw);
+			return PacketUtil.getNamedEntitySpawnPacket(player.getEntityId(), loc, name, itemInHand, dw);
 		} else {
 			dw = MetaDataUtil.getDataWatcher(type, extras);
-			return PacketUtil.getMobSpawnPacket(EntityID, loc, type, dw);
+			return PacketUtil.getMobSpawnPacket(player.getEntityId(), loc, type, dw);
 		}
     }
 }

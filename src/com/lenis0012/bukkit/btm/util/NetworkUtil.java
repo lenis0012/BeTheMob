@@ -16,6 +16,9 @@ public class NetworkUtil {
 	 * @param player		Player to recive packet
 	 */
 	public static void sendPacket(Packet packet, Player player) {
+		if(packet == null || player == null)
+			return;
+		
 		CraftPlayer cp = (CraftPlayer)player;
 		EntityPlayer ep = cp.getHandle();
 		ep.playerConnection.sendPacket(packet);

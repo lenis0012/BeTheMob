@@ -1,9 +1,10 @@
 package com.lenis0012.bukkit.btm;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.WeakHashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
@@ -18,7 +19,7 @@ import com.lenis0012.bukkit.btm.nms.ProtocolLibManager;
 
 public class BeTheMob extends JavaPlugin {
 	public int nextID = Short.MAX_VALUE;
-	public WeakHashMap<String, Disguise> disguises = new WeakHashMap<String, Disguise>();
+	public Map<String, Disguise> disguises = new HashMap<String, Disguise>();
 	public static BeTheMob instance;
 	public List<String> hidden = new ArrayList<String>();
 	private BTMTaskManager task;

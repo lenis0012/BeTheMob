@@ -93,6 +93,7 @@ public class MetaDataUtil {
 				String tag = extra.split(":")[1];
 				if(tag.length() > 16)
 					tag = tag.substring(0, 16);
+				tag = ColorUtil.fixColors(tag);
 				
 				tmp.a(5, String.valueOf(tag));
 				tmp.a(6, Byte.valueOf((byte) 1));
