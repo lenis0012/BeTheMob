@@ -2,7 +2,6 @@ package com.lenis0012.bukkit.btm.api;
 
 import java.util.List;
 
-import net.minecraft.server.v1_5_R1.DataWatcher;
 import net.minecraft.server.v1_5_R1.ItemStack;
 import net.minecraft.server.v1_5_R1.Packet;
 
@@ -17,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerMoveEvent;
 
 import com.lenis0012.bukkit.btm.BTMTaskManager;
+import com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
 import com.lenis0012.bukkit.btm.util.MetaDataUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
 import com.lenis0012.bukkit.btm.util.PacketUtil;
@@ -95,6 +95,10 @@ public class Disguise {
 		return this.EntityID;
 	}
 	
+	public DataWatcher getDataWatcher() {
+		return this.dw;
+	}
+	
 	/**
 	 * Set the location of the disguise
 	 * 
@@ -127,8 +131,8 @@ public class Disguise {
 	public void spawn(World world) {
 		if(isPlayer) {
 			dw = new DataWatcher();
-			dw.a(0, Byte.valueOf((byte) 0));
-			dw.a(12, Integer.valueOf((int) 0));
+			dw.set(0, Byte.valueOf((byte) 0));
+			dw.set(12, Integer.valueOf((int) 0));
 			NetworkUtil.sendGlobalPacket(PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand, dw), world, player);
 		} else {
 			dw = MetaDataUtil.getDataWatcher(type, extras);
@@ -169,7 +173,7 @@ public class Disguise {
 	 * 'Ignites' the disguise
 	 */
 	public void ignite(){
-		dw.a(0, Byte.valueOf((byte) 1));
+		dw.set(0, Byte.valueOf((byte) 1));
 		updateMetaData();
 	}
 	
@@ -177,7 +181,7 @@ public class Disguise {
 	 * Stops fire on the entity
 	 */
 	public void extinguish(){
-		dw.a(0, Byte.valueOf((byte) 0));
+		dw.set(0, Byte.valueOf((byte) 0));
 		updateMetaData();
 	}
 	
@@ -349,8 +353,8 @@ public class Disguise {
     public Packet getSpawnPacket() {
     	if(isPlayer) {
 			dw = new DataWatcher();
-			dw.a(0, Byte.valueOf((byte) 0));
-			dw.a(12, Integer.valueOf((int) 0));
+			dw.set(0, Byte.valueOf((byte) 0));
+			dw.set(12, Integer.valueOf((int) 0));
 			return PacketUtil.getNamedEntitySpawnPacket(player.getEntityId(), loc, name, itemInHand, dw);
 		} else {
 			dw = MetaDataUtil.getDataWatcher(type, extras);

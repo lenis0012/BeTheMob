@@ -2,7 +2,6 @@ package com.lenis0012.bukkit.btm.util;
 
 import java.lang.reflect.Field;
 
-import net.minecraft.server.v1_5_R1.DataWatcher;
 import net.minecraft.server.v1_5_R1.ItemStack;
 import net.minecraft.server.v1_5_R1.Packet;
 import net.minecraft.server.v1_5_R1.Packet18ArmAnimation;
@@ -23,6 +22,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 
 import com.lenis0012.bukkit.btm.api.Movement;
+import com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
 
 /**
  * Generates all packets needed in this plugin
@@ -71,7 +71,7 @@ public class PacketUtil {
 		try {
 			Field field = packet.getClass().getDeclaredField("t");
 			field.setAccessible(true);
-			field.set(packet, tmp);
+			field.set(packet, tmp.getHandle());
 			field.setAccessible(false);
 		} catch(Exception e) {
 			System.err.println("Could not acces DataWatcher field");
@@ -120,7 +120,7 @@ public class PacketUtil {
 		try {
 			Field field = packet.getClass().getDeclaredField("i");
 			field.setAccessible(true);
-			field.set(packet, tmp);
+			field.set(packet, tmp.getHandle());
 			field.setAccessible(false);
 		} catch(Exception e) {
 			System.err.println("Could not acces DataWatcher field");
@@ -304,7 +304,7 @@ public class PacketUtil {
 	 * @return				Packet
 	 */
 	public static Packet40EntityMetadata getEntityMetadataPacket(int EntityID, DataWatcher tmp) {
-		return new Packet40EntityMetadata(EntityID, tmp, true);
+		return new Packet40EntityMetadata(EntityID, (net.minecraft.server.v1_5_R1.DataWatcher) tmp.getHandle(), true);
 	}
 	
 	/**

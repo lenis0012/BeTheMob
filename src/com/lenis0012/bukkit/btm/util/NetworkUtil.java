@@ -1,13 +1,15 @@
 package com.lenis0012.bukkit.btm.util;
 
-import net.minecraft.server.v1_5_R1.EntityPlayer;
-import net.minecraft.server.v1_5_R1.Packet;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import org.bukkit.World;
-import org.bukkit.craftbukkit.v1_5_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 public class NetworkUtil {
+	private static Method toPlayerHandle = DynamicUtil.getMethod(DynamicUtil.getCBClass("entity.CraftPlayer"), "getHandle");
+	private static Field playerConnection = DynamicUtil.getField(DynamicUtil.getNMSClass("EntityPlayer"), "playerConnection");
+	private static Method sendPacket = DynamicUtil.getMethod(DynamicUtil.getNMSClass("PlayerConnection"), "sendPacket", DynamicUtil.getNMSClass("Packet"));
 	
 	/**
 	 * Send a packet o a player
@@ -15,13 +17,13 @@ public class NetworkUtil {
 	 * @param packet		Packet to send
 	 * @param player		Player to recive packet
 	 */
-	public static void sendPacket(Packet packet, Player player) {
+	public static void sendPacket(Object packet, Player player) {
 		if(packet == null || player == null)
 			return;
 		
-		CraftPlayer cp = (CraftPlayer)player;
-		EntityPlayer ep = cp.getHandle();
-		ep.playerConnection.sendPacket(packet);
+		Object ep = DynamicUtil.invoke(toPlayerHandle, player);
+		Object pcon = DynamicUtil.getValue(ep, playerConnection);
+		DynamicUtil.invoke(sendPacket, pcon, packet);
 	}
 	
 	/**
@@ -30,7 +32,7 @@ public class NetworkUtil {
 	 * @param packet		Packet to send
 	 * @param world			World to recive packet
 	 */
-	public static void sendGlobalPacket(Packet packet, World world) {
+	public static void sendGlobalPacket(Object packet, World world) {
 		for(Player player : world.getPlayers()) {
 			sendPacket(packet, player);
 		}
@@ -43,7 +45,7 @@ public class NetworkUtil {
 	 * @param world			World to recive
 	 * @param ignore		Player to be ignored
 	 */
-	public static void sendGlobalPacket(Packet packet, World world, Player ignore) {
+	public static void sendGlobalPacket(Object packet, World world, Player ignore) {
 		for(Player player : world.getPlayers()) {
 			if(!player.getName().equals(ignore.getName()))
 				sendPacket(packet, player);

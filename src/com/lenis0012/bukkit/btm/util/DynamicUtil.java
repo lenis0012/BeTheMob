@@ -1,6 +1,9 @@
 package com.lenis0012.bukkit.btm.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class DynamicUtil {
 	public static final String MC_VERSION;
@@ -88,5 +91,73 @@ public class DynamicUtil {
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static Method getMethod(Class<?> fromClass, String name, Class<?>... params) {
+		try {
+			return fromClass.getDeclaredMethod(name, params);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static <T> T invoke(Method method, Object instance, Object... values) {
+		try {
+			return (T) method.invoke(instance, values);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Constructor<Object> getConstructor(Class<?> fromClass, Class<?>... params) {
+		try {
+			return (Constructor<Object>) fromClass.getConstructor(params);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static Object newInstance(Constructor<Object> constructor, Object... values) {
+		try {
+			return constructor.newInstance(values);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	public static Object newInstance(Class<?> fromClass) {
+		try {
+			return fromClass.newInstance();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 }
