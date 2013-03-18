@@ -87,6 +87,13 @@ public class Disguise {
 	}
 	
 	/**
+	 * @return The disguises custom name
+	 */
+	public String getCustomName(){
+		return name;
+	}
+	
+	/**
 	 * Get the custom entity id of the disguise
 	 * 
 	 * @return EntityId

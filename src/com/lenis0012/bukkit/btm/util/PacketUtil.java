@@ -319,6 +319,7 @@ public class PacketUtil {
 	public static Packet5EntityEquipment getEntityEquipmentPacket(int EntityID, int slot, ItemStack item){
 		Packet5EntityEquipment packet;
 		packet = new Packet5EntityEquipment(EntityID, slot, item);
+		
 		return packet;
 	}
 	

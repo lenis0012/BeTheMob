@@ -229,7 +229,7 @@ public class BTMListener implements Listener {
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		BeTheMob plugin = BeTheMob.instance;
 		String name = player.getName();
 		Location loc = event.getRespawnLocation();
@@ -240,6 +240,15 @@ public class BTMListener implements Listener {
 			dis.spawn(loc.getWorld());
 			dis.refreshMovement();
 		}
+		Bukkit.getScheduler().runTaskLater(BeTheMob.instance, new Runnable() {
+
+			@Override
+			public void run() {
+				for(String s : BeTheMob.instance.disguises.keySet()){
+					Disguise dis = BeTheMob.instance.disguises.get(s);
+					dis.spawn(player);
+				}
+			}}, 25);
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
