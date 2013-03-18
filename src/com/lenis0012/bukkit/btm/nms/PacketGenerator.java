@@ -2,7 +2,6 @@ package com.lenis0012.bukkit.btm.nms;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,6 +9,8 @@ import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.api.IPacketGenerator;
 import com.lenis0012.bukkit.btm.api.Movement;
 import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
+import com.lenis0012.bukkit.btm.util.ColorUtil;
+import com.lenis0012.bukkit.btm.util.CraftItemStack;
 import com.lenis0012.bukkit.btm.util.MathUtil;
 
 public class PacketGenerator implements IPacketGenerator{
@@ -151,7 +152,7 @@ public class PacketGenerator implements IPacketGenerator{
 		byte yaw = getByteFromDegree(loc.getYaw());
 		byte pitch = getByteFromDegree(loc.getPitch());
 		packet.write("a", dis.getEntityId());
-		packet.write("b", dis.getCustomName());
+		packet.write("b", ColorUtil.fixColors(dis.getCustomName()));
 		packet.write("c", x);
 		packet.write("d", y);
 		packet.write("e", z);

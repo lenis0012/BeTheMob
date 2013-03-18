@@ -113,4 +113,8 @@ public class BeTheMob extends JavaPlugin {
 		
 		return hidden.contains(name);
 	}
+	
+	public ClassLoader getLoader() {
+		return this.getClassLoader();
+	}
 }

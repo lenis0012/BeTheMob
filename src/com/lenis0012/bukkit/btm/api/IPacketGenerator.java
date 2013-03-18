@@ -5,6 +5,11 @@ import org.bukkit.inventory.ItemStack;
 
 import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
 
+/**
+ * PacketGenerator interface
+ * 
+ * @author lenis0012
+ */
 public interface IPacketGenerator {
 
 	/**

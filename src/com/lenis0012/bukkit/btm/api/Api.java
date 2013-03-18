@@ -23,6 +23,26 @@ public class Api {
 	}
 	
 	/**
+	 * Check if a player id disguised
+	 * 
+	 * @param player Player
+	 * @return Disguised?
+	 */
+	public boolean isDisguised(Player player) {
+		return plugin.disguises.containsKey(player.getName());
+	}
+	
+	/**
+	 * Gets a disguise from a player
+	 * 
+	 * @param player Player
+	 * @return Disguise (null if player not disguised)
+	 */
+	public Disguise getDisguise(Player player) {
+		return plugin.disguises.get(player.getName());
+	}
+	
+	/**
 	 * Create a mob disguise
 	 * 
 	 * @param player		Player to disguise

@@ -24,7 +24,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import com.lenis0012.bukkit.btm.api.Disguise;
-import com.lenis0012.bukkit.btm.nms.PacketConnection;
+import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
 
 public class BTMListener implements Listener {
 	
@@ -97,7 +97,7 @@ public class BTMListener implements Listener {
 		
 		if(!plugin.protLib) {
 			//Change the players connection
-			PacketConnection.hook(player);
+			PlayerConnectionCallback.hook(player);
 		}
 		
 	}

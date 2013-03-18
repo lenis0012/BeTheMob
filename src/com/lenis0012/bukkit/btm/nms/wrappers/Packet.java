@@ -28,6 +28,15 @@ public class Packet extends WrapperBase {
 	
 	public Packet(Object handle) {
 		super(handle);
+		packet_class = handle.getClass();
+		
+		if(!globalFields.containsKey(packet_class)) {
+			FieldMap map = new FieldMap();
+			map.init(packet_class);
+			globalFields.put(packet_class, map);
+		}
+		
+		this.fields = globalFields.get(packet_class);
 	}
 	
 	public void write(String fieldName, Object value) {
@@ -39,12 +48,28 @@ public class Packet extends WrapperBase {
 		DynamicUtil.setValue(handle, field, value);
 	}
 	
-	public Object read(String fieldName, Object value) {
+	public Object read(String fieldName) {
 		if(!fields.containsKey(fieldName))
 			throw new IllegalArgumentException("Invalid field name '" + fieldName +
 					"' for class: " + packet_class.getSimpleName());
 		
 		Field field = fields.get(fieldName);
 		return DynamicUtil.getValue(handle, field);
+	}
+	
+	public int readInt(String fieldName) {
+		return (Integer) read(fieldName);
+	}
+	
+	public String readString(String fieldName) {
+		return (String) read(fieldName);
+	}
+	
+	public byte readByte(String fieldName) {
+		return (Byte) read(fieldName);
+	}
+	
+	public boolean readBoolean(String fieldName) {
+		return (Boolean) read(fieldName);
 	}
 }
