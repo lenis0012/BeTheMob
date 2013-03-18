@@ -1,5 +1,6 @@
 package com.lenis0012.bukkit.btm.nms;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,13 +18,14 @@ import org.bukkit.entity.Player;
 import com.lenis0012.bukkit.btm.BeTheMob;
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.events.PlayerInteractDisguisedEvent;
+import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
+import com.lenis0012.bukkit.btm.util.DynamicUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
 
 import net.minecraft.server.v1_5_R1.EntityPlayer;
 import net.minecraft.server.v1_5_R1.INetworkManager;
 import net.minecraft.server.v1_5_R1.MinecraftServer;
 import net.minecraft.server.v1_5_R1.Packet14BlockDig;
-import net.minecraft.server.v1_5_R1.Packet53BlockChange;
 import net.minecraft.server.v1_5_R1.Packet7UseEntity;
 import net.minecraft.server.v1_5_R1.PlayerConnection;
 import net.minecraft.server.v1_5_R1.ServerConnection;
@@ -33,6 +35,7 @@ import net.minecraft.server.v1_5_R1.WorldServer;
 public class PacketConnection extends PlayerConnection {
 	private static Logger log = Logger.getLogger("Minecraft");
 	private static final List<PlayerConnection> connections;
+	private static final Constructor<Object> blockChange = DynamicUtil.getConstructor(DynamicUtil.getNMSClass("Packet53BlockChange"), int.class, int.class, int.class, DynamicUtil.getNMSClass("World"));
 	
 	static {
 		CraftServer cs = (CraftServer)Bukkit.getServer();
@@ -160,7 +163,8 @@ public class PacketConnection extends PlayerConnection {
 				int z = packet.c;
 				this.player.playerInteractManager.a(x, y, z);
 				if(ws.getTypeId(x, y, z) != 0) {
-					NetworkUtil.sendGlobalPacket(new Packet53BlockChange(x, y, z, ws), world);
+					Packet newPacket = new Packet(DynamicUtil.newInstance(blockChange, x, y, z, ws));
+					NetworkUtil.sendGlobalPacket(newPacket, world);
 				}
 				
 				return;

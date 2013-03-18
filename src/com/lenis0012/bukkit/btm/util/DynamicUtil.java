@@ -73,6 +73,8 @@ public class DynamicUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T getValue(Object instance, Field field) {
 		try {
+			if(!field.isAccessible())
+				field.setAccessible(true);
 			return (T) field.get(instance);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -85,6 +87,8 @@ public class DynamicUtil {
 	
 	public static void setValue(Object instance, Field field, Object value) {
 		try {
+			if(!field.isAccessible())
+				field.setAccessible(true);
 			field.set(instance, value);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -108,6 +112,8 @@ public class DynamicUtil {
 	@SuppressWarnings("unchecked")
 	public static <T> T invoke(Method method, Object instance, Object... values) {
 		try {
+			if(!method.isAccessible())
+				method.setAccessible(true);
 			return (T) method.invoke(instance, values);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();

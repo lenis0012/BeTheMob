@@ -51,7 +51,7 @@ public class BeTheMob extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		task.stop();
+		task.cancel();
 		
 		Iterator<String> it = this.disguises.keySet().iterator();
 		while(it.hasNext()) {

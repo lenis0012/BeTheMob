@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -28,23 +27,6 @@ import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.nms.PacketConnection;
 
 public class BTMListener implements Listener {
-	
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerMove(PlayerMoveEvent event) {
-		if(event.isCancelled())
-			return;
-		
-		Player player = event.getPlayer();
-		String name = player.getName();
-		BeTheMob plugin = BeTheMob.instance;
-		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
-			dis.move(event);
-
-		}
-		
-	}
 	
 	@EventHandler (priority=EventPriority.MONITOR)
 	public void onCombust(EntityCombustEvent event) {
@@ -79,11 +61,11 @@ public class BTMListener implements Listener {
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
 			if(dis.isPlayer()) { //Only switch armour for player disguise types
-				dis.changeItem(player, event.getNewSlot());
-				dis.changeArmor(player, 1);
-				dis.changeArmor(player, 2);
-				dis.changeArmor(player, 3);
-				dis.changeArmor(player, 4);
+				dis.changeItem(event.getNewSlot());
+				dis.changeArmor(1);
+				dis.changeArmor(2);
+				dis.changeArmor(3);
+				dis.changeArmor(4);
 			}
 		}
 	}
@@ -148,19 +130,8 @@ public class BTMListener implements Listener {
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
 		Player player = event.getPlayer();
-		BeTheMob plugin = BeTheMob.instance;
-		String name = player.getName();
-		Location loc = player.getLocation();
 		
-		BTMTaskManager.notifyWorldChanged(player);
-		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
-			dis.despawn(event.getFrom());
-			dis.setLocation(loc);
-			dis.spawn(loc.getWorld());
-			dis.refreshMovement();
-		}
+		BTMTaskManager.notifyWorldChanged(player, event.getFrom());
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)

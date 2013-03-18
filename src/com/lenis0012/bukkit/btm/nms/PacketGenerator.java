@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm.api;
+package com.lenis0012.bukkit.btm.nms;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -6,6 +6,9 @@ import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
+import com.lenis0012.bukkit.btm.api.Disguise;
+import com.lenis0012.bukkit.btm.api.IPacketGenerator;
+import com.lenis0012.bukkit.btm.api.Movement;
 import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
 import com.lenis0012.bukkit.btm.util.MathUtil;
 
@@ -24,9 +27,10 @@ public class PacketGenerator implements IPacketGenerator{
 	 * 3 - chestplate
 	 * 4 - helmet
 	 * @param slot The slot to update
-	 * @return
+	 * @return Packet
 	 */
-	public Packet getEntityEquipmentPacket(int slot, ItemStack item){
+	@Override
+	public Packet getEntityEquipmentPacket(int slot, ItemStack item) {
 		Packet packet = new Packet("Packet5EntityEquipment");
 		packet.write("a", dis.getEntityId());
 		packet.write("b", slot);
@@ -34,16 +38,21 @@ public class PacketGenerator implements IPacketGenerator{
 		return packet;
 	}
 	
-	public Packet getEntityHeadRotatePacket(){
+	@Override
+	public Packet getEntityHeadRotatePacket() {
 		Packet packet = new Packet("Packet35EntityHeadRotation");
+		
+		byte yaw = this.getByteFromDegree(dis.getLocation().getYaw());
+		
 		packet.write("a", dis.getEntityId());
-		packet.write("b", dis.getPlayer().getLocation().getYaw());
+		packet.write("b", yaw);
 		return packet;
 	}
 	
-	public Packet getDestroyEntityPacket(int EntityId){
+	@Override
+	public Packet getDestroyEntityPacket() {
 		Packet packet = new Packet("Packet29DestroyEntity");
-		packet.write("a", new Integer[] {EntityId});//The field 'a' is actually a array!
+		packet.write("a", new int[] {dis.getEntityId()}); //The field 'a' is actually a array!
 		return packet;
 	}
 	
@@ -56,19 +65,21 @@ public class PacketGenerator implements IPacketGenerator{
 	 * 9 - Player allowed to eat
 	 * 10 - sheep eating grass
 	 * 
-	 * @param status 		The status
+	 * @param status The status
 	 * 
-	 * @return				Packet
+	 * @return Packet
 	 * 
 	 */
-	public Packet getEntityStatusPacket(byte status){
+	@Override
+	public Packet getEntityStatusPacket(byte status) {
 		Packet packet = new Packet("Packet38EntityStatus");
 		packet.write("a", dis.getEntityId());
 		packet.write("b", status);
 		return packet;
 	}
 	
-	public Packet getEntityLookPacket(){
+	@Override
+	public Packet getEntityLookPacket() {
 		Packet packet = new Packet("Packet32EntityLook");
 		
 		byte yaw = getByteFromDegree(dis.getPlayer().getLocation().getYaw());
@@ -82,24 +93,37 @@ public class PacketGenerator implements IPacketGenerator{
 		return packet;
 	}
 	
-	public Packet getEntityMoveLookPacket(Location to){
+	@Override
+	public Packet getEntityMoveLookPacket(Movement movement) {
 		Packet packet = new Packet("Packet33RelEntityMoveLook");
-		byte x = (byte)to.getX();
-		byte y = (byte)to.getY();
-		byte z = (byte)to.getZ();
-		byte yaw = getByteFromDegree(to.getYaw());
-		byte pitch = getByteFromDegree(to.getPitch());
+		Location loc = dis.getLocation();
+		byte x = (byte) movement.x;
+		byte y = (byte) movement.y;
+		byte z = (byte) movement.z;
+		byte yaw = getByteFromDegree(loc.getYaw());
+		byte pitch = getByteFromDegree(loc.getPitch());
 		
 		if(dis.getDisguiseType() == EntityType.ENDER_DRAGON) { yaw = (byte) (yaw - 128); }
 		if(dis.getDisguiseType() == EntityType.CHICKEN) { pitch = (byte) (pitch * -1); }
 		
 		if(x > 128 || x < -128 || y > 128 || y < -128 || z > 128 || z < -128)
-			return getEntityTeleportPacket(to);
+			return getEntityTeleportPacket();
+		
+		packet.write("a", dis.getEntityId());
+		packet.write("b", x);
+		packet.write("c", y);
+		packet.write("d", z);
+		packet.write("e", yaw);
+		packet.write("f", pitch);
+		packet.write("g", true);
+		
 		return packet;
 	}
 	
-	public Packet getEntityTeleportPacket(Location to){
+	@Override
+	public Packet getEntityTeleportPacket() {
 		Packet packet = new Packet("Packet34EntityTeleport");
+		Location to = dis.getLocation();
 		int x = MathUtil.floor(to.getX() * 32.0D);
 		int y = MathUtil.floor(to.getY() * 32.0D);
 		int z = MathUtil.floor(to.getZ() * 32.0D);
@@ -117,7 +141,8 @@ public class PacketGenerator implements IPacketGenerator{
 		return packet;
 	}
 	
-	public Packet getNamedEntitySpawnPacket(){
+	@Override
+	public Packet getNamedEntitySpawnPacket() {
 		Packet packet = new Packet("Packet20NamedEntitySpawn");
 		Location loc = dis.getLocation();
 		int x = MathUtil.floor(loc.getX() * 32.0D);
@@ -138,6 +163,7 @@ public class PacketGenerator implements IPacketGenerator{
 		return packet;
 	}
 	
+	@Override
 	public Packet getMobSpawnPacket() {
 		//Create packet
 		Packet packet = new Packet("Packet24MobSpawn");
@@ -197,8 +223,12 @@ public class PacketGenerator implements IPacketGenerator{
 
 	@Override
 	public Packet getEntityMetadataPacket() {
-		// TODO Auto-generated method stub
-		return null;
+		Packet packet = new Packet("Packet40EntityMetadata");
+		
+		packet.write("a", dis.getEntityId());
+		packet.write("b", dis.getDataWatcher().getAll());
+		
+		return packet;
 	}
 	
 	/*

@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import com.lenis0012.bukkit.btm.BTMTaskManager;
 import com.lenis0012.bukkit.btm.BeTheMob;
 
 /**
@@ -65,6 +66,7 @@ public class Api {
 			dis.despawn();
 		}
 		
+		disguise.spawn(player.getLocation().getWorld());
 		plugin.disguises.put(name, disguise);
 		plugin.setHidden(player, true);
 	}
@@ -82,6 +84,7 @@ public class Api {
 			plugin.disguises.remove(name);
 			dis.despawn();
 			plugin.setHidden(player, false);
+			BTMTaskManager.notifyPlayerUndisguised(name);
 		}
 	}
 }

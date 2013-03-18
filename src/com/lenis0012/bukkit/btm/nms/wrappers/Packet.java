@@ -26,6 +26,10 @@ public class Packet extends WrapperBase {
 		this.fields = globalFields.get(packet_class);
 	}
 	
+	public Packet(Object handle) {
+		super(handle);
+	}
+	
 	public void write(String fieldName, Object value) {
 		if(!fields.containsKey(fieldName))
 			throw new IllegalArgumentException("Invalid field name '" + fieldName +

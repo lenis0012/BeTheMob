@@ -1,73 +1,78 @@
 package com.lenis0012.bukkit.btm;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.btm.api.Disguise;
-import com.lenis0012.bukkit.btm.util.NetworkUtil;
-import com.lenis0012.bukkit.btm.util.PacketUtil;
 
-public class BTMTaskManager {
+public class BTMTaskManager extends Thread {
 	private BeTheMob plugin;
-	private int task;
-	private static HashMap<String, List<Disguise>> render = new HashMap<String, List<Disguise>>();
+	//private static HashMap<String, List<Disguise>> render = new HashMap<String, List<Disguise>>();
+	private static Map<String, Location> locations = new HashMap<String, Location>();
+	private int doTeleport = 10;
 	
 	public BTMTaskManager(BeTheMob plugin) {
 		this.plugin = plugin;
 	}
 	
-	public void start() {
-		task = Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				long startTime = System.currentTimeMillis();
-				BeTheMob plugin = BeTheMob.instance;
-				for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-					String name = player.getName();
-					
-					if(System.currentTimeMillis() - startTime > 1000)
-						break;
-					
-					List<Disguise> list;
-					if(render.containsKey(name))
-						list = render.get(name);
-					else
-						list = new ArrayList<Disguise>();
-					
-					for(String user : plugin.disguises.keySet()) {
-						if(!user.equals(name)) {
-							Disguise dis = plugin.disguises.get(user);
-							Location l1 = player.getLocation();
-							Location l2 = dis.getLocation();
-							if(l2.getWorld() == l1.getWorld()) {
-								double distance = l1.distance(l2);
-								if(!list.contains(dis) && distance <= Bukkit.getViewDistance() * 10) {
-									list.add(dis);
-									dis.spawn(player);
-								} else if(list.contains(dis) && distance > Bukkit.getViewDistance() * 10) {
-									list.remove(dis);
-									dis.unLoadFor(player);
-								}
-							}
-							
-							Player check = dis.getPlayer();
-							if(!check.getName().equals(name)) {
-								dis.setLocation(check.getLocation());
-								NetworkUtil.sendPacket(PacketUtil.getEntityTeleportPacket(dis.getEntityId(), check.getLocation(), dis.getDisguiseType()), player);
-							}
+	@Override
+	public void run() {
+		while(!this.isInterrupted()) {
+			synchronized(locations) {
+				for(String user : plugin.disguises.keySet()) {
+					Player player = Bukkit.getPlayer(user);
+					if(player != null && player.isOnline()) {
+						if(!locations.containsKey(user)) {
+							locations.put(user, player.getLocation().clone());
+							continue;
 						}
+						
+						Disguise dis = plugin.disguises.get(user);
+						Location lastLoc = locations.get(user);
+						Location newLoc = player.getLocation();
+						boolean locChanged = false;
+						boolean moved = false;
+						
+						if(hasMoved(lastLoc, newLoc)) {
+							moved = true;
+							locChanged = true;
+						} else if(hasLooked(lastLoc, newLoc))
+							locChanged = true;
+						
+						if(locChanged) {
+							dis.move(lastLoc, newLoc, moved);
+							locations.put(user, newLoc.clone());
+						}
+						
+						if(doTeleport <= 0) {
+							dis.teleport(newLoc);
+							this.doTeleport = 10;
+						} else
+							this.doTeleport--;
 					}
-					render.put(name, list);
 				}
 			}
-		}, 20, 20);
+			
+			try {
+				Thread.sleep(50);
+			} catch (InterruptedException e) {
+				//Thead interrupted
+			}
+		}
+	}
+	
+	private boolean hasMoved(Location lastLoc, Location newLoc) {
+		return lastLoc.getX() != newLoc.getX() ||  lastLoc.getY() != newLoc.getY() || lastLoc.getZ() != newLoc.getZ();
+	}
+	
+	private boolean hasLooked(Location lastLoc, Location newLoc) {
+		return lastLoc.getYaw() != newLoc.getYaw() || lastLoc.getPitch() != newLoc.getPitch();
 	}
 	
 	/**
@@ -75,22 +80,17 @@ public class BTMTaskManager {
 	 * 
 	 * @param player		Player who changed world
 	 */
-	public static void notifyWorldChanged(Player player) {
+	public static void notifyWorldChanged(Player player, World from) {
 		String name = player.getName();
 		BeTheMob plugin = BeTheMob.instance;
 		
-		render.put(name, new ArrayList<Disguise>());
-		
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
-			
-			for(String user : render.keySet()) {
-				List<Disguise> list = render.get(user);
-				if(list.contains(dis)) {
-					list.remove(dis);
-					render.put(user, list);
-				}
-			}
+			Location loc = dis.getPlayer().getLocation();
+			dis.despawn(from);
+			dis.setLocation(loc);
+			dis.spawn(loc.getWorld());
+			dis.refreshMovement();
 		}
  	}
 	
@@ -105,38 +105,17 @@ public class BTMTaskManager {
 		
 		if(plugin.disguises.containsKey(name)) {
 			Disguise dis = plugin.disguises.get(name);
-			
-			for(String user : render.keySet()) {
-				List<Disguise> list = render.get(user);
-				
-				if(list.contains(dis)) {
-					list.remove(dis);
-					render.put(user, list);
-				}
-			}
+			dis.despawn();
 		}
 	}
 	
-	/**
-	 * Add a player to be rendered
-	 * 
-	 * @param player		Player whjo got rendered
-	 * @param dis			Disguise from the player
-	 */
-	public static void addPlayerToRender(Player player, Disguise dis) {
-		String name = player.getName();
-		
-		List<Disguise> list;
-		if(render.containsKey(name))
-			list = render.get(name);
-		else
-			list = new ArrayList<Disguise>();
-		
-		list.add(dis);
-		render.put(name, list);
+	public static void notifyPlayerUndisguised(String name) {
+		synchronized(locations) {
+			locations.remove(name);
+		}
 	}
 	
-	public void stop() {
-		Bukkit.getServer().getScheduler().cancelTask(task);
+	public void cancel() {
+		this.interrupt();
 	}
 }

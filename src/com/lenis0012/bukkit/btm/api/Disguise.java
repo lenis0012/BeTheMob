@@ -2,24 +2,17 @@ package com.lenis0012.bukkit.btm.api;
 
 import java.util.List;
 
-import net.minecraft.server.v1_5_R1.ItemStack;
-import net.minecraft.server.v1_5_R1.Packet;
-
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_5_R1.inventory.CraftItemStack;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerMoveEvent;
 
-import com.lenis0012.bukkit.btm.BTMTaskManager;
+import com.lenis0012.bukkit.btm.nms.PacketGenerator;
 import com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
 import com.lenis0012.bukkit.btm.util.MetaDataUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
-import com.lenis0012.bukkit.btm.util.PacketUtil;
 
 /**
  * Data wrapper of a player disguise
@@ -38,6 +31,7 @@ public class Disguise {
 	private List<String> extras;
 	private Movement movement;
 	private DataWatcher dw;
+	private IPacketGenerator gen;
 	
 	public Disguise(Player player, int EntityID, Location loc, String name, int itemInHand) {
 		this.isPlayer = true;
@@ -48,6 +42,7 @@ public class Disguise {
 		this.itemInHand = itemInHand;
 		this.player = player;
 		this.movement = new Movement(loc);
+		this.gen = new PacketGenerator(this);
 	}
 	
 	public Disguise(Player player, int EntityID, Location loc, EntityType type, List<String> extras) {
@@ -57,6 +52,7 @@ public class Disguise {
 		this.player = player;
 		this.extras = extras;
 		this.movement = new Movement(loc);
+		this.gen = new PacketGenerator(this);
 	}
 	
 	/**
@@ -123,9 +119,9 @@ public class Disguise {
 	public void spawn(Player player) {
 		if(this.spawned) {
 			if(isPlayer) {
-				NetworkUtil.sendPacket(PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand, dw), player);
+				NetworkUtil.sendPacket(gen.getNamedEntitySpawnPacket(), player);
 			} else {
-				NetworkUtil.sendPacket(PacketUtil.getMobSpawnPacket(EntityID, loc, type, dw), player);
+				NetworkUtil.sendPacket(gen.getNamedEntitySpawnPacket(), player);
 			}
 		}
 	}
@@ -140,22 +136,12 @@ public class Disguise {
 			dw = new DataWatcher();
 			dw.set(0, Byte.valueOf((byte) 0));
 			dw.set(12, Integer.valueOf((int) 0));
-			NetworkUtil.sendGlobalPacket(PacketUtil.getNamedEntitySpawnPacket(EntityID, loc, name, itemInHand, dw), world, player);
+			NetworkUtil.sendGlobalPacket(gen.getNamedEntitySpawnPacket(), world, this.getPlayer());
 		} else {
 			dw = MetaDataUtil.getDataWatcher(type, extras);
-			NetworkUtil.sendGlobalPacket(PacketUtil.getMobSpawnPacket(EntityID, loc, type, dw), world, player);
+			NetworkUtil.sendGlobalPacket(gen.getMobSpawnPacket(), world, this.getPlayer());
 		}
 		
-		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-			if(!player.getName().equals(this.player.getName())) {
-				Location l = player.getLocation();
-				if(l.getWorld().getName().equals(world.getName())) {
-					if(l.distance(loc) < Bukkit.getViewDistance() * 10) {
-						BTMTaskManager.addPlayerToRender(player, this);
-					}
-				}
-			}
-		}
 		this.spawned = true;
 	}
 	
@@ -164,7 +150,7 @@ public class Disguise {
 	 */
 	public void despawn() {
 		World world = loc.getWorld();
-		NetworkUtil.sendGlobalPacket(PacketUtil.getDestroyEntityPacket(EntityID), world, player);
+		NetworkUtil.sendGlobalPacket(gen.getDestroyEntityPacket(), world, this.player);
 		this.spawned = false;
 	}
 	
@@ -172,8 +158,8 @@ public class Disguise {
 	 * Kill the entity with the normal fall over animation
 	 * (Warning kills and despawns disguise)
 	 */
-	public void kill(){
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityStatusPacket(EntityID, (byte) 3), player.getWorld());
+	public void kill() {
+		NetworkUtil.sendGlobalPacket(gen.getEntityStatusPacket((byte) 3), loc.getWorld(), this.getPlayer());
 	}
 	
 	/**
@@ -199,7 +185,7 @@ public class Disguise {
 	 * @param world	World to despawn disguise
 	 */
 	public void despawn(World world) {
-		NetworkUtil.sendGlobalPacket(PacketUtil.getDestroyEntityPacket(EntityID), world, player);
+		NetworkUtil.sendGlobalPacket(gen.getDestroyEntityPacket(), world, this.getPlayer());
 		this.spawned = false;
 	}
 	
@@ -209,22 +195,22 @@ public class Disguise {
 	 * @param player Player to unload disguise for
 	 */
 	public void unLoadFor(Player player) {
-		NetworkUtil.sendPacket(PacketUtil.getDestroyEntityPacket(EntityID), player);
+		NetworkUtil.sendPacket(gen.getDestroyEntityPacket(), player);
 	}
 	
 	/**
 	 * @param player Player to change disguises item in hand for
 	 * slot 0 is the item in hand
 	 */
-	public void changeItem(Player player, int new_slot){
+	public void changeItem(int new_slot) {
 		org.bukkit.inventory.ItemStack bukkitstack = null;
 		if(player.getInventory().getItem(new_slot) == null){
 			bukkitstack = new org.bukkit.inventory.ItemStack(Material.AIR, 1);
 		}else{
 			bukkitstack = player.getInventory().getItem(new_slot);
 		}
-		ItemStack item = CraftItemStack.asNMSCopy(bukkitstack);
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityEquipmentPacket(EntityID, 0, item), player.getWorld());
+		this.itemInHand = bukkitstack.getTypeId();
+		NetworkUtil.sendGlobalPacket(gen.getEntityEquipmentPacket(0, bukkitstack), loc.getWorld(), this.getPlayer());
 	}
 	
 	/**
@@ -235,7 +221,7 @@ public class Disguise {
 	 * 3 chestplate
 	 * 4 helmet
 	 */
-	public void changeArmor(Player player, int slot){
+	public void changeArmor(int slot) {
 		org.bukkit.inventory.ItemStack bukkitstack = null;
 		switch(slot){
 		case 1:
@@ -256,8 +242,7 @@ public class Disguise {
 		if(bukkitstack == null){
 			bukkitstack = new org.bukkit.inventory.ItemStack(Material.AIR);
 		}
-		ItemStack item = CraftItemStack.asNMSCopy(bukkitstack);
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityEquipmentPacket(EntityID, slot, item), player.getWorld());
+		NetworkUtil.sendGlobalPacket(gen.getEntityEquipmentPacket(slot, bukkitstack), loc.getWorld(), this.getPlayer());
 	}
 	
 	/**
@@ -265,22 +250,19 @@ public class Disguise {
 	 * 
 	 * @param event Event to get moving from
 	 */
-	public void move(PlayerMoveEvent event) {
+	public void move(Location from, Location to, boolean moved) {
 		if(!spawned)
 			return;
 		
-		Location from = event.getFrom();
-		Location to = event.getTo();
-		boolean moved = from.getBlockX() != to.getX() || from.getY() != to.getY() || from.getZ() != to.getZ();
 		World world = to.getWorld();
 		this.loc = to;
 		
 		if(moved) {
 			movement.update(to);
-			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityMoveLookPacket(EntityID, movement, to, type), world, player);
+			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), world, this.getPlayer());
 		} else
-			NetworkUtil.sendGlobalPacket(PacketUtil.getEntityLookPacket(EntityID, to, getDisguiseType()), world, player);
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityHeadRotationPacket(EntityID, to, getDisguiseType()), world, player);
+			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), world, this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getEntityHeadRotatePacket(), world, this.getPlayer());
 	}
 	
 	/**
@@ -290,7 +272,7 @@ public class Disguise {
 	 */
 	public void teleport(Location loc) {
 		this.loc = loc;
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityTeleportPacket(EntityID, loc, type), loc.getWorld(), this.player);
+		NetworkUtil.sendGlobalPacket(gen.getEntityTeleportPacket(), loc.getWorld(), this.getPlayer());
 		this.movement = new Movement(loc);
 	}
 	
@@ -298,7 +280,7 @@ public class Disguise {
 	 * Swing the arm of the disguise
 	 */
 	public void swingArm() {
-		NetworkUtil.sendGlobalPacket(PacketUtil.getArmAntimationPacket(EntityID, 1), loc.getWorld());
+		NetworkUtil.sendGlobalPacket(gen.getArmAnimationPacket(1), loc.getWorld(), this.getPlayer());
 	}
 	
 	/**
@@ -307,14 +289,14 @@ public class Disguise {
 	 * @param block	Block to damage
 	 */
 	public void damageBlock(Block block) {
-		NetworkUtil.sendGlobalPacket(PacketUtil.getBlockBreakAnimationPacket(EntityID, block), loc.getWorld());
+		NetworkUtil.sendGlobalPacket(gen.getBlockBreakAnimationPacket(block), loc.getWorld(), this.getPlayer());
 	}
 	
 	/**
 	 * Notify the disguised player got damaged
 	 */
 	public void damage() {
-		NetworkUtil.sendGlobalPacket(PacketUtil.getArmAntimationPacket(EntityID, 2), loc.getWorld());
+		NetworkUtil.sendGlobalPacket(gen.getArmAnimationPacket(2), loc.getWorld(), this.getPlayer());
 	}
 	
 	/**
@@ -340,7 +322,7 @@ public class Disguise {
 	}
 	
 	public void updateMetaData() {
-		NetworkUtil.sendGlobalPacket(PacketUtil.getEntityMetadataPacket(EntityID, dw), loc.getWorld(), player);
+		NetworkUtil.sendGlobalPacket(gen.getEntityMetadataPacket(), loc.getWorld(), this.getPlayer());
 	}
 	
 	/**
@@ -357,15 +339,21 @@ public class Disguise {
     	return type;
     }
     
-    public Packet getSpawnPacket() {
-    	if(isPlayer) {
-			dw = new DataWatcher();
-			dw.set(0, Byte.valueOf((byte) 0));
-			dw.set(12, Integer.valueOf((int) 0));
-			return PacketUtil.getNamedEntitySpawnPacket(player.getEntityId(), loc, name, itemInHand, dw);
-		} else {
-			dw = MetaDataUtil.getDataWatcher(type, extras);
-			return PacketUtil.getMobSpawnPacket(player.getEntityId(), loc, type, dw);
-		}
+    /**
+     * Get the packet generator
+     * 
+     * @return Packet geneator
+     */
+    public IPacketGenerator getPacketGenerator() {
+    	return this.gen;
     }
+
+    /**
+     * Get the item in the players hand
+     * 
+     * @return Item in hand
+     */
+	public int getItemInHand() {
+		return itemInHand;
+	}
 }

@@ -13,6 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
+import com.lenis0012.bukkit.btm.api.Api;
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.events.PlayerDisguiseEvent;
 import com.lenis0012.bukkit.btm.events.PlayerUndisguiseEvent;
@@ -30,16 +31,12 @@ public class BTMCommand implements CommandExecutor {
 		BeTheMob plugin = BeTheMob.instance;
 		String name = player.getName();
 		PluginManager pm = Bukkit.getServer().getPluginManager();
+		Api api = BeTheMob.getApi();
 		
 		if(args.length > 0) {
 			if(args[0].equalsIgnoreCase("mob")) {
 				if(args.length > 1) {
-					if(plugin.disguises.containsKey(name)) {
-						Disguise dis = plugin.disguises.get(name);
-						dis.despawn();
-						plugin.disguises.remove(name);
-						plugin.setHidden(player, false);
-					}
+					api.removeDisguise(player);
 					
 					EntityType type = this.parseType(args[1]);
 					if(type != null) {
@@ -49,10 +46,8 @@ public class BTMCommand implements CommandExecutor {
 							if(!ev.isCancelled()) {
 								Location loc = player.getLocation();
 								List<String> extras = this.parseExtras(args, player);
-								Disguise dis = new Disguise(player, plugin.nextID--, loc, ev.getType(), extras);
-								dis.spawn(loc.getWorld());
-								plugin.disguises.put(name, dis);
-								plugin.setHidden(player, true);
+								Disguise dis = api.createDisguise(player, loc, type, extras);
+								api.addDisguise(player, dis);
 								inf(player, "Succesfully diguised as a "+args[1]);
 							}
 						} else
@@ -62,12 +57,7 @@ public class BTMCommand implements CommandExecutor {
 				} else
 					err(player, "Invalid arguments");
 			} else if(args[0].equalsIgnoreCase("player")) {
-				if(plugin.disguises.containsKey(name)) {
-					Disguise dis = plugin.disguises.get(name);
-					dis.despawn();
-					plugin.disguises.remove(name);
-					plugin.setHidden(player, false);
-				}
+				api.removeDisguise(player);
 				
 				if(args.length > 1) {
 					String target = args[1];
@@ -99,9 +89,7 @@ public class BTMCommand implements CommandExecutor {
 					PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(player, dis);
 					pm.callEvent(ev);
 					if(!ev.isCancelled()) {
-						dis.despawn();
-						plugin.disguises.remove(name);
-						plugin.setHidden(player, false);
+						api.removeDisguise(player);
 						inf(player, "You are no longer disguised");
 					}
 				} else

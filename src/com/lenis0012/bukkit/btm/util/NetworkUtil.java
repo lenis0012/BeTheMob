@@ -6,6 +6,8 @@ import java.lang.reflect.Method;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
+
 public class NetworkUtil {
 	private static Method toPlayerHandle = DynamicUtil.getMethod(DynamicUtil.getCBClass("entity.CraftPlayer"), "getHandle");
 	private static Field playerConnection = DynamicUtil.getField(DynamicUtil.getNMSClass("EntityPlayer"), "playerConnection");
@@ -17,13 +19,13 @@ public class NetworkUtil {
 	 * @param packet		Packet to send
 	 * @param player		Player to recive packet
 	 */
-	public static void sendPacket(Object packet, Player player) {
+	public static void sendPacket(Packet packet, Player player) {
 		if(packet == null || player == null)
 			return;
 		
 		Object ep = DynamicUtil.invoke(toPlayerHandle, player);
 		Object pcon = DynamicUtil.getValue(ep, playerConnection);
-		DynamicUtil.invoke(sendPacket, pcon, packet);
+		DynamicUtil.invoke(sendPacket, pcon, packet.getHandle());
 	}
 	
 	/**
@@ -32,7 +34,7 @@ public class NetworkUtil {
 	 * @param packet		Packet to send
 	 * @param world			World to recive packet
 	 */
-	public static void sendGlobalPacket(Object packet, World world) {
+	public static void sendGlobalPacket(Packet packet, World world) {
 		for(Player player : world.getPlayers()) {
 			sendPacket(packet, player);
 		}
@@ -45,7 +47,7 @@ public class NetworkUtil {
 	 * @param world			World to recive
 	 * @param ignore		Player to be ignored
 	 */
-	public static void sendGlobalPacket(Object packet, World world, Player ignore) {
+	public static void sendGlobalPacket(Packet packet, World world, Player ignore) {
 		for(Player player : world.getPlayers()) {
 			if(!player.getName().equals(ignore.getName()))
 				sendPacket(packet, player);
