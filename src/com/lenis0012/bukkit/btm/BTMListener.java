@@ -300,6 +300,7 @@ public class BTMListener implements Listener {
 					if(plugin.disguises.containsKey(name)) {
 						Disguise dis = plugin.disguises.get(name);
 						dis.damage();
+						dis.playHurtSound();//Wont play if disabled
 					}
 				}
 				

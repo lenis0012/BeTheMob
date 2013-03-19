@@ -64,6 +64,7 @@ public class BeTheMob extends JavaPlugin {
 				PlayerConnectionCallback.hook(player);
 			}
 		}
+        saveDefaultConfig();//Saves the default config. Will not overwrite
 	}
 	
 	private boolean isCompatible(String version) {

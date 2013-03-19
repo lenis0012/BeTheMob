@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.btm.nms.PacketGenerator;
@@ -356,4 +357,84 @@ public class Disguise {
 	public int getItemInHand() {
 		return itemInHand;
 	}
+    
+    public void playHurtSound() {
+        if(BeTheMob.instance.getConfig().getBoolean("play_sound_on_hurt")) {
+			if(BeTheMob.instance.getConfig().getBoolean("can_damaged_hear_sound")) {
+				player.getWorld().playSound(getLocation(), getHurtSound(), 1, 1);
+			}else{
+				for(Entity e : player.getNearbyEntities(7, 7, 7)){
+					if(e.getType() == EntityType.PLAYER){
+						((Player)e).playSound(getLocation(), getHurtSound(), 1, 1);
+					}
+				}
+			}
+        }
+        				if(BeTheMob.instance.getConfig().getBoolean("play_sound_on_hurt")){
+					if(BeTheMob.instance.getConfig().getBoolean("can_damaged_hear_sound")){
+						player.getWorld().playSound(player.getLocation(), dis.getHurtSound(), 1, 1);
+					}else{
+						for(Entity e : player.getNearbyEntities(7, 7, 7)){
+							if(e.getType() == EntityType.PLAYER){
+								((Player)e).playSound(player.getLocation(), dis.getHurtSound(), 1, 1);
+							}
+						}
+					}
+				}
+    
+    }
+    
+    /**
+     * Gets the correct damaged sound
+     * If the disguise is a zombie it will be a zombie one
+     * Etc.
+     */
+    public Sound getHurtSound() {
+    	Random random = new Random();
+    	if(type == EntityType.BAT){
+    		return Sound.BAT_HURT;
+    	} else if(type == EntityType.BLAZE){
+    		return Sound.BLAZE_HIT;
+    	} else if(type == EntityType.CAVE_SPIDER || type == EntityType.SPIDER){
+    		return Sound.SPIDER_DEATH;// Spider death is hurt
+    	}else if(type == EntityType.CHICKEN){
+    		return Sound.CHICKEN_HURT;
+    	}else if(type == EntityType.COW || type == EntityType.MUSHROOM_COW){
+    		return Sound.COW_HURT;
+    	}else if(type == EntityType.CREEPER){
+    		return Sound.CREEPER_HISS;
+    	}else if(type == EntityType.ENDER_DRAGON){
+    		return Sound.ENDERDRAGON_HIT;
+    	}else if(type == EntityType.ENDERMAN){
+    		return Sound.ENDERMAN_HIT;
+    	}else if(type == EntityType.GHAST){
+    		return random.nextBoolean() ? Sound.GHAST_SCREAM : Sound.GHAST_SCREAM2;
+    	}else if(type == EntityType.IRON_GOLEM){
+    		return Sound.IRONGOLEM_HIT;
+    	}else if(type == EntityType.MAGMA_CUBE || type == EntityType.SLIME){
+    		return random.nextBoolean() ? Sound.SLIME_WALK : Sound.SLIME_WALK2;
+    	}else if(type == EntityType.OCELOT){
+    		return random.nextBoolean() ? Sound.CAT_HIT : Sound.CAT_HISS;
+    	}else if(type == EntityType.PIG){
+    		return Sound.PIG_DEATH;
+    	} else if(type == EntityType.PIG_ZOMBIE){
+    		return Sound.ZOMBIE_PIG_HURT;
+    	}else if(isPlayer){
+    		return Sound.HURT_FLESH;
+    	}else if(type == EntityType.SHEEP){
+    		return Sound.SHEEP_IDLE;
+    	}else if(type == EntityType.SILVERFISH){
+    		return Sound.SILVERFISH_HIT;
+    	}else if(type == EntityType.SKELETON){
+    		return Sound.SKELETON_HURT;
+    	}else if(type == EntityType.WITHER){
+    		return Sound.WITHER_HURT;
+    	}else if(type == EntityType.ZOMBIE){
+    		return Sound.ZOMBIE_HURT;
+    	}
+    	
+    	return null;
+    }
+
+    
 }

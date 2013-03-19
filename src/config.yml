@@ -1,0 +1,5 @@
+#If true a disguised player will play the correct sound when hurt
+#eg. Zombie disguise hurt so zombie sound
+play_sound_on_hurt: true
+#If set false the person damaged can not hear themself get hurt (besides the default sound)
+can_damaged_hear_sound: false
