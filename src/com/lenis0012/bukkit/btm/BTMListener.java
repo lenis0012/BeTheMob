@@ -29,71 +29,93 @@ import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
 public class BTMListener implements Listener {
 	
 	@EventHandler (priority=EventPriority.MONITOR)
-	public void onCombust(EntityCombustEvent event) {
+	public void onCombust(final EntityCombustEvent event) {
 		if(event.isCancelled())
 			return;
 		
 		if(event.getEntityType() == EntityType.PLAYER){
-			Player player = (Player) event.getEntity();
-			String name = player.getName();
-			BeTheMob plugin = BeTheMob.instance;
-			if(plugin.disguises.containsKey(name)) {
-				final Disguise dis = plugin.disguises.get(name);
-				dis.ignite();
-				Bukkit.getScheduler().runTaskLater(BeTheMob.instance, new Runnable() {
+			final Player player = (Player) event.getEntity();
+			final String name = player.getName();
+			final BeTheMob plugin = BeTheMob.instance;
+			
+			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-					@Override
-					public void run() {
-						dis.extinguish();
-						
-					}}, event.getDuration()*20);
+				@Override
+				public void run() {
+					if(plugin.disguises.containsKey(name)) {
+						final Disguise dis = plugin.disguises.get(name);
+						dis.ignite();
+						Bukkit.getScheduler().runTaskLaterAsynchronously(BeTheMob.instance, new Runnable() {
 
-			}
+							@Override
+							public void run() {
+								dis.extinguish();
+								
+							}}, event.getDuration() * 20);
+
+					}
+				}
+				
+			});
 		}
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerSwapItem(PlayerItemHeldEvent event){
-		Player player = event.getPlayer();
-		String name = player.getName();
-		BeTheMob plugin = BeTheMob.instance;
+	public void onPlayerSwapItem(final PlayerItemHeldEvent event){
+		final Player player = event.getPlayer();
+		final String name = player.getName();
+		final BeTheMob plugin = BeTheMob.instance;
 		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
-			if(dis.isPlayer()) { //Only switch armour for player disguise types
-				dis.changeItem(event.getNewSlot());
-				dis.changeArmor(1);
-				dis.changeArmor(2);
-				dis.changeArmor(3);
-				dis.changeArmor(4);
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(plugin.disguises.containsKey(name)) {
+					Disguise dis = plugin.disguises.get(name);
+					if(dis.isPlayer()) { //Only switch armour for player disguise types
+						dis.changeItem(event.getNewSlot());
+						dis.changeArmor(1);
+						dis.changeArmor(2);
+						dis.changeArmor(3);
+						dis.changeArmor(4);
+					}
+				}
 			}
-		}
+			
+		});
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		BeTheMob plugin = BeTheMob.instance;
-		Player player = event.getPlayer();
-		String name = player.getName();
+	public void onPlayerJoin(final PlayerJoinEvent event) {
+		final BeTheMob plugin = BeTheMob.instance;
+		final Player player = event.getPlayer();
+		final String name = player.getName();
 		
 		for(Player online : Bukkit.getServer().getOnlinePlayers()) {
 			if(plugin.isHidden(online))
 				player.hidePlayer(online);
 		}
 		
-		if(plugin.disguises.containsKey(name)) {
-			plugin.setHidden(player, true);
-			Disguise dis = plugin.disguises.get(name);
-			
-			dis.spawn(player.getWorld());
-		}
-		
-		for(String user : plugin.disguises.keySet()) {
-			if(!user.equals(name)) {
-				Disguise dis = plugin.disguises.get(user);
-				dis.spawn(player);
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(plugin.disguises.containsKey(name)) {
+					plugin.setHidden(player, true);
+					Disguise dis = plugin.disguises.get(name);
+					
+					dis.spawn(player.getWorld());
+				}
+				
+				for(String user : plugin.disguises.keySet()) {
+					if(!user.equals(name)) {
+						Disguise dis = plugin.disguises.get(user);
+						dis.spawn(player);
+					}
+				}
 			}
-		}
+			
+		});
 		
 		if(!plugin.protLib) {
 			//Change the players connection
@@ -103,160 +125,211 @@ public class BTMListener implements Listener {
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		BeTheMob plugin = BeTheMob.instance;
-		Player player = event.getPlayer();
-		String name = player.getName();
+	public void onPlayerQuit(final PlayerQuitEvent event) {
+		final BeTheMob plugin = BeTheMob.instance;
+		final Player player = event.getPlayer();
 		
 		if(plugin.isHidden(player))
 			plugin.setHidden(player, false);
 		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				BTMTaskManager.notifyPlayerLeft(player);
+			}
 			
-			dis.despawn();
-		}
+		});
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onPlayerChangedWorld(final PlayerChangedWorldEvent event) {
+		final BeTheMob plugin = BeTheMob.instance;
+		final Player player = event.getPlayer();
 		
-		for(String user : plugin.disguises.keySet()) {
-			if(!user.equals(name)) {
-				Disguise dis = plugin.disguises.get(user);
-				dis.unLoadFor(player);
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				BTMTaskManager.notifyWorldChanged(player, event.getFrom());
 			}
-		}
-		
-		BTMTaskManager.notifyPlayerLeft(player);
+			
+		});
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerChangedWorld(PlayerChangedWorldEvent event) {
-		Player player = event.getPlayer();
-		
-		BTMTaskManager.notifyWorldChanged(player, event.getFrom());
-	}
-	
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerTeleport(PlayerTeleportEvent event) {
+	public void onPlayerTeleport(final PlayerTeleportEvent event) {
 		if(event.isCancelled())
 			return;
 		
-		Player player = event.getPlayer();
-		BeTheMob plugin = BeTheMob.instance;
-		String name = player.getName();
-		Location loc = event.getTo();
+		final Player player = event.getPlayer();
+		final BeTheMob plugin = BeTheMob.instance;
+		final String name = player.getName();
+		final Location loc = event.getTo();
 		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
-			dis.teleport(loc);
-		}
-	}
-	
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerAnimation(PlayerAnimationEvent event) {
-		if(event.isCancelled())
-			return;
-		
-		PlayerAnimationType type = event.getAnimationType();
-		Player player = event.getPlayer();
-		BeTheMob plugin = BeTheMob.instance;
-		String name = player.getName();
-		
-		if(plugin.disguises.containsKey(name)) {
-			if(type == PlayerAnimationType.ARM_SWING) {
-				Disguise dis = plugin.disguises.get(name);
-				dis.swingArm();
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(plugin.disguises.containsKey(name)) {
+					Disguise dis = plugin.disguises.get(name);
+					dis.teleport(loc);
+				}
 			}
-		}
+			
+		});
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onBlockDamage(BlockDamageEvent event) {
+	public void onPlayerAnimation(final PlayerAnimationEvent event) {
 		if(event.isCancelled())
 			return;
 		
-		Block block = event.getBlock();
-		Player player = event.getPlayer();
-		BeTheMob plugin = BeTheMob.instance;
-		String name = player.getName();
+		final PlayerAnimationType type = event.getAnimationType();
+		final Player player = event.getPlayer();
+		final BeTheMob plugin = BeTheMob.instance;
+		final String name = player.getName();
 		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
-			dis.damageBlock(block);
-		}
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(plugin.disguises.containsKey(name)) {
+					if(type == PlayerAnimationType.ARM_SWING) {
+						Disguise dis = plugin.disguises.get(name);
+						dis.swingArm();
+					}
+				}
+			}
+			
+		});
+	}
+	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onBlockDamage(final BlockDamageEvent event) {
+		if(event.isCancelled())
+			return;
+		
+		final Block block = event.getBlock();
+		final Player player = event.getPlayer();
+		final BeTheMob plugin = BeTheMob.instance;
+		final String name = player.getName();
+		
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(plugin.disguises.containsKey(name)) {
+					Disguise dis = plugin.disguises.get(name);
+					dis.damageBlock(block);
+				}
+			}
+			
+		});
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		Player player = event.getEntity();
-		BeTheMob plugin = BeTheMob.instance;
-		String name = player.getName();
+		final Player player = event.getEntity();
+		final BeTheMob plugin = BeTheMob.instance;
+		final String name = player.getName();
 		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
-			dis.kill();
-		}
-		
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(plugin.disguises.containsKey(name)) {
+					Disguise dis = plugin.disguises.get(name);
+					dis.kill();
+				}
+			}
+			
+		});
 	}
 	
 	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerRespawn(PlayerRespawnEvent event) {
 		final Player player = event.getPlayer();
-		BeTheMob plugin = BeTheMob.instance;
-		String name = player.getName();
-		Location loc = event.getRespawnLocation();
+		final BeTheMob plugin = BeTheMob.instance;
+		final String name = player.getName();
+		final Location loc = event.getRespawnLocation();
 		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
-			dis.setLocation(loc);
-			dis.spawn(loc.getWorld());
-			dis.refreshMovement();
-		}
-		Bukkit.getScheduler().runTaskLater(BeTheMob.instance, new Runnable() {
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 			@Override
 			public void run() {
-				for(String s : BeTheMob.instance.disguises.keySet()){
-					Disguise dis = BeTheMob.instance.disguises.get(s);
-					dis.spawn(player);
+				if(plugin.disguises.containsKey(name)) {
+					Disguise dis = plugin.disguises.get(name);
+					dis.setLocation(loc);
+					dis.spawn(loc.getWorld());
+					dis.refreshMovement();
 				}
-			}}, 25);
+				
+				Bukkit.getScheduler().runTaskLater(BeTheMob.instance, new Runnable() {
+
+					@Override
+					public void run() {
+						for(String s : BeTheMob.instance.disguises.keySet()){
+							Disguise dis = BeTheMob.instance.disguises.get(s);
+							dis.spawn(player);
+						}
+					}
+				}, 25);
+			}
+			
+		});
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onEntityDamage(EntityDamageEvent event) {
+	public void onEntityDamage(final EntityDamageEvent event) {
 		if(event.isCancelled())
 			return;
 		
-		Entity entity = event.getEntity();
-		BeTheMob plugin = BeTheMob.instance;
+		final Entity entity = event.getEntity();
+		final BeTheMob plugin = BeTheMob.instance;
 		
 		if(entity instanceof Player) {
-			Player player = (Player)entity;
-			String name = player.getName();
+			final Player player = (Player)entity;
+			final String name = player.getName();
 			
-			if(plugin.disguises.containsKey(name)) {
-				Disguise dis = plugin.disguises.get(name);
-				dis.damage();
-			}
+			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+				@Override
+				public void run() {
+					if(plugin.disguises.containsKey(name)) {
+						Disguise dis = plugin.disguises.get(name);
+						dis.damage();
+					}
+				}
+				
+			});
 		}
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+	public void onPlayerToggleSneak(final PlayerToggleSneakEvent event) {
 		if(event.isCancelled())
 			return;
 		
-		Player player = event.getPlayer();
-		BeTheMob plugin = BeTheMob.instance;
-		String name = player.getName();
+		final Player player = event.getPlayer();
+		final BeTheMob plugin = BeTheMob.instance;
+		final String name = player.getName();
 		
-		if(plugin.disguises.containsKey(name)) {
-			Disguise dis = plugin.disguises.get(name);
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				if(plugin.disguises.containsKey(name)) {
+					Disguise dis = plugin.disguises.get(name);
+					
+					if(event.isSneaking())
+						dis.crouch();
+					else
+						dis.uncrouch();
+				}
+			}
 			
-			if(event.isSneaking())
-				dis.crouch();
-			else
-				dis.uncrouch();
-		}
+		});
 	}
 }

@@ -15,7 +15,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.lenis0012.bukkit.btm.api.Api;
 import com.lenis0012.bukkit.btm.api.Disguise;
+import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
 import com.lenis0012.bukkit.btm.nms.ProtocolLibManager;
+import com.lenis0012.bukkit.btm.util.DynamicUtil;
 
 public class BeTheMob extends JavaPlugin {
 	public int nextID = Short.MAX_VALUE;
@@ -28,10 +30,19 @@ public class BeTheMob extends JavaPlugin {
 	private ProtocolLibManager protocol;
 	public Logger log = Logger.getLogger("Minecraft");
 	
+	private String COMPAT_VERSION = "1_5_R1";
+	
 	@Override
 	public void onEnable() {
 		instance = this;
 		PluginManager pm = this.getServer().getPluginManager();
+		
+		if(!this.isCompatible(COMPAT_VERSION)) {
+			String version = DynamicUtil.MC_VERSION;
+			version = version.isEmpty() ? "unknown" : version.substring(1);
+			log.warning("[BeTheMob] BeTheMob has not been tested with this version of bukkit yet.");
+			log.warning("[BeTheMob] The plugin might not work in '" + version + "'!");
+		}
 		
 		getCommand("btm").setExecutor(new BTMCommand());
 		pm.registerEvents(new BTMListener(), this);
@@ -46,6 +57,21 @@ public class BeTheMob extends JavaPlugin {
 			protocol.start();
 			this.protLib = true;
 			log.info("[BeTheMob] Hooked with ProtocolLib");
+		}
+		
+		if(!protLib) {
+			for(Player player : Bukkit.getServer().getOnlinePlayers()) {
+				PlayerConnectionCallback.hook(player);
+			}
+		}
+	}
+	
+	private boolean isCompatible(String version) {
+		try {
+			Class.forName("net.minecraft.server." + version + ".World");
+			return true;
+		} catch (ClassNotFoundException e) {
+			return false;
 		}
 	}
 	
