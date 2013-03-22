@@ -18,6 +18,7 @@ import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
 import com.lenis0012.bukkit.btm.nms.ProtocolLibManager;
 import com.lenis0012.bukkit.btm.util.DynamicUtil;
+import com.lenis0012.bukkit.btm.util.MathUtil;
 
 public class BeTheMob extends JavaPlugin {
 	public int nextID = Short.MAX_VALUE;
@@ -30,15 +31,16 @@ public class BeTheMob extends JavaPlugin {
 	private ProtocolLibManager protocol;
 	public Logger log = Logger.getLogger("Minecraft");
 	
-	private String COMPAT_VERSION = "1_5_R1";
+	private static final int MAX_VERSION = 152;
+	private static final int MIN_VERSION = 151;
 	
 	@Override
 	public void onEnable() {
 		instance = this;
 		PluginManager pm = this.getServer().getPluginManager();
+		String version = DynamicUtil.MC_VERSION;
 		
-		if(!this.isCompatible(COMPAT_VERSION)) {
-			String version = DynamicUtil.MC_VERSION;
+		if(!this.isCompatible(version)) {
 			version = version.isEmpty() ? "unknown" : version.substring(1);
 			log.warning("[BeTheMob] BeTheMob has not been tested with this version of bukkit yet.");
 			log.warning("[BeTheMob] The plugin might not work in '" + version + "'!");
@@ -68,12 +70,8 @@ public class BeTheMob extends JavaPlugin {
 	}
 	
 	private boolean isCompatible(String version) {
-		try {
-			Class.forName("net.minecraft.server." + version + ".World");
-			return true;
-		} catch (ClassNotFoundException e) {
-			return false;
-		}
+		int realVersion = MathUtil.countNrs(version);
+		return realVersion >= MIN_VERSION && realVersion <= MAX_VERSION;
 	}
 	
 	@Override
