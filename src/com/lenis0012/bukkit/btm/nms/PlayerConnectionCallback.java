@@ -69,9 +69,11 @@ public class PlayerConnectionCallback implements MethodInterceptor, CallbackFilt
 		PlayerConnection oldCon = new PlayerConnection(ep.getPlayerConnection());
 		PlayerConnectionCallback callback = new PlayerConnectionCallback();
 		
-		if(!canReplace(oldCon)) {
+		if(!canReplace(oldCon.getHandle())) {
 			log.severe("[BeTheMob] Could no replace playerConnection for player: " + player.getName());
 			log.severe("Please install ProtcolLib if this happends for more players!");
+			log.severe("PlayerConnection class: '" + oldCon.getHandle().getClass().getName() +
+					"', expected :'" + PlayerConnectionClass.getName() + "'!");
 		}
 		
 		Enhancer e = new Enhancer();
