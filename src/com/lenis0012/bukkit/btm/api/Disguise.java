@@ -1,15 +1,18 @@
 package com.lenis0012.bukkit.btm.api;
 
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
+import com.lenis0012.bukkit.btm.BeTheMob;
 import com.lenis0012.bukkit.btm.nms.PacketGenerator;
 import com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
 import com.lenis0012.bukkit.btm.util.MetaDataUtil;
@@ -370,17 +373,17 @@ public class Disguise {
 				}
 			}
         }
-        				if(BeTheMob.instance.getConfig().getBoolean("play_sound_on_hurt")){
-					if(BeTheMob.instance.getConfig().getBoolean("can_damaged_hear_sound")){
-						player.getWorld().playSound(player.getLocation(), dis.getHurtSound(), 1, 1);
-					}else{
-						for(Entity e : player.getNearbyEntities(7, 7, 7)){
-							if(e.getType() == EntityType.PLAYER){
-								((Player)e).playSound(player.getLocation(), dis.getHurtSound(), 1, 1);
-							}
-						}
+		if(BeTheMob.instance.getConfig().getBoolean("play_sound_on_hurt")){
+			if(BeTheMob.instance.getConfig().getBoolean("can_damaged_hear_sound")){
+				player.getWorld().playSound(player.getLocation(), this.getHurtSound(), 1, 1);
+			}else{
+				for(Entity e : player.getNearbyEntities(7, 7, 7)){
+					if(e.getType() == EntityType.PLAYER){
+						((Player)e).playSound(player.getLocation(), this.getHurtSound(), 1, 1);
 					}
 				}
+			}
+		}
     
     }
     
