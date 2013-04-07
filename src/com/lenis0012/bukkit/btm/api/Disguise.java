@@ -125,7 +125,7 @@ public class Disguise {
 			if(isPlayer) {
 				NetworkUtil.sendPacket(gen.getNamedEntitySpawnPacket(), player);
 			} else {
-				NetworkUtil.sendPacket(gen.getNamedEntitySpawnPacket(), player);
+				NetworkUtil.sendPacket(gen.getMobSpawnPacket(), player);
 			}
 		}
 	}

@@ -159,7 +159,8 @@ public class PacketGenerator implements IPacketGenerator{
 		packet.write("f", yaw);
 		packet.write("g", pitch);
 		packet.write("h", dis.getPlayer().getItemInHand().getTypeId());
-		packet.write("i", dis.getDataWatcher().getHandle());
+		packet.setDataWatcher(dis.getDataWatcher());
+		//packet.write("i", dis.getDataWatcher().getHandle());
 		
 		return packet;
 	}
@@ -193,9 +194,9 @@ public class PacketGenerator implements IPacketGenerator{
 		packet.write("f", 0);
 		packet.write("g", 0);
 		packet.write("h", 0);
+		packet.setDataWatcher(dis.getDataWatcher());
+		//packet.write("t", dis.getDataWatcher().getHandle());
 		
-		//Set the Datawatcher
-		packet.write("t", dis.getDataWatcher().getHandle());
 		return packet;
 	}
 

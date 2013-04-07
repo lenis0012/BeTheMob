@@ -11,8 +11,10 @@ public class ColorUtil {
 	 * 
 	 * @return				Message with fixed colors
 	 */
-	public static String fixColors(String message)
-	{
+	public static String fixColors(String message) {
+		if(message == null)
+			return message;
+		
 		message = message.replaceAll("&0", ChatColor.BLACK.toString());
 		message = message.replaceAll("&1", ChatColor.DARK_BLUE.toString());
 		message = message.replaceAll("&2", ChatColor.DARK_GREEN.toString());

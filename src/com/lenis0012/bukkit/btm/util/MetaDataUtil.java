@@ -1,13 +1,18 @@
 package com.lenis0012.bukkit.btm.util;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 
 import com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
+import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
 
 public class MetaDataUtil {
+	private static Map<Class<?>, Field> datawatchers = new HashMap<Class<?>, Field>();
 	
 	/**
 	 * Get the DataWatcher of an animal
@@ -109,6 +114,24 @@ public class MetaDataUtil {
 		}
 		
 		return tmp;
+	}
+	
+	public static Field getDatawatcherField(Packet packet) {
+		Class<?> clazz = packet.getHandle().getClass();
+		if(datawatchers.containsKey(clazz)) {
+			return datawatchers.get(clazz);
+		} else {
+			Field dw = null;
+			
+			for(Field field : clazz.getDeclaredFields()) {
+				if(field.getType() == DynamicUtil.getNMSClass("DataWatcher")) {
+					dw = field;
+				}
+			}
+			
+			datawatchers.put(clazz, dw);
+			return dw;
+		}
 	}
 	
 	private static SheepColor getColor(String color) {

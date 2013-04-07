@@ -55,6 +55,10 @@ public class EntityPlayer extends WrapperBase {
 	}
 	
 	public boolean longDistance(Object entity) {
+		if(entity == null)
+			throw new IllegalArgumentException("Entity is null!");
+		if(handle == null)
+			throw new IllegalArgumentException("Handle is null!");
 		return DynamicUtil.invoke(longDistance, handle, entity);
 	}
 	

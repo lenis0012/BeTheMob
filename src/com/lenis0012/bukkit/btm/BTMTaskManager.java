@@ -24,6 +24,7 @@ public class BTMTaskManager extends Thread {
 	@Override
 	public void run() {
 		while(!this.isInterrupted()) {
+			boolean teleport = this.doTeleport <= 0;
 			synchronized(locations) {
 				for(String user : plugin.disguises.keySet()) {
 					Player player = Bukkit.getPlayer(user);
@@ -50,14 +51,16 @@ public class BTMTaskManager extends Thread {
 							locations.put(user, newLoc.clone());
 						}
 						
-						if(doTeleport <= 0) {
+						if(teleport)
 							dis.teleport(newLoc);
-							this.doTeleport = 10;
-						} else
-							this.doTeleport--;
 					}
 				}
 			}
+			
+			if(teleport) {
+				this.doTeleport = 10;
+			} else
+				this.doTeleport--;
 			
 			try {
 				Thread.sleep(50);

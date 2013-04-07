@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.lenis0012.bukkit.btm.nms.FieldMap;
 import com.lenis0012.bukkit.btm.util.DynamicUtil;
+import com.lenis0012.bukkit.btm.util.MetaDataUtil;
 
 public class Packet extends WrapperBase {
 	private static Map<Class<?>, FieldMap> globalFields = new HashMap<Class<?>, FieldMap>();
@@ -71,5 +72,14 @@ public class Packet extends WrapperBase {
 	
 	public boolean readBoolean(String fieldName) {
 		return (Boolean) read(fieldName);
+	}
+	
+	public void setDataWatcher(DataWatcher datawatcher) {
+		Field field = MetaDataUtil.getDatawatcherField(this);
+		if(field != null) {
+			field.setAccessible(true);
+			DynamicUtil.setValue(handle, field, datawatcher.getHandle());
+			field.setAccessible(false);
+		}
 	}
 }

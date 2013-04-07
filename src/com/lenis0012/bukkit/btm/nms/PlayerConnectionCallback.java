@@ -8,7 +8,6 @@ import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -147,7 +146,7 @@ public class PlayerConnectionCallback implements MethodInterceptor, CallbackFilt
 				}
 			}
 			
-			if(target != null) {
+			if(target != null && target.getHandle() != null) {
 				boolean flag = ep.longDistance(target.getHandle());
 				double distance = 36D;
 				
@@ -164,8 +163,6 @@ public class PlayerConnectionCallback implements MethodInterceptor, CallbackFilt
 		            	return Void.TYPE;
 					} else if(action == 1) {
 						ep.attack(target.getHandle());
-						Player t_player = target.getBukkitEntity();
-						t_player.getWorld().playSound(t_player.getLocation(), Sound.HURT_FLESH, 63F, 1F);
 						
 						return Void.TYPE;
 					}
@@ -201,10 +198,10 @@ public class PlayerConnectionCallback implements MethodInterceptor, CallbackFilt
 					double d3 = d0 * d0 + d1 * d1 + d2 * d2;
 					
 					if(d3 > 36D)
-						return proxy.invokeSuper(instance, args);
+						return Void.TYPE;
 					
 					if(y >= 256)
-						return proxy.invokeSuper(instance, args);
+						return Void.TYPE;
 					
 					NetworkUtil.sendGlobalPacket(newPacket, world);
 					
