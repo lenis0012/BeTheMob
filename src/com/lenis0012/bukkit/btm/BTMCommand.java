@@ -9,7 +9,12 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Ambient;
+import org.bukkit.entity.Animals;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
@@ -129,7 +134,12 @@ public class BTMCommand implements CommandExecutor {
 	
 	private EntityType parseType(String toParse) {
 		try {
-			return EntityType.valueOf(toParse.toUpperCase());
+			EntityType type = EntityType.valueOf(toParse.toUpperCase());
+			Class<? extends Entity> mobClass = type.getEntityClass();
+			if(!mobClass.isAssignableFrom(Monster.class) && !mobClass.isAssignableFrom(Animals.class) && !mobClass.isAssignableFrom(NPC.class) && !mobClass.isAssignableFrom(Ambient.class))
+				return null;
+			else
+				return type;
 		} catch(Exception e) {
 			return null;
 		}

@@ -100,7 +100,7 @@ public class PlayerConnectionCallback implements MethodInterceptor, CallbackFilt
 			ListIterator<Object> it = connections.listIterator();
 			while(it.hasNext()) {
 				PlayerConnection con = new PlayerConnection(it.next());
-				if(con.getPlayer().equals(ep)) {
+				if(con.getPlayer().getHandle().equals(ep.getHandle())) {
 					it.set(newCon);
 					break;
 				}
