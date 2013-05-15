@@ -9,12 +9,7 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Ambient;
-import org.bukkit.entity.Animals;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
@@ -44,6 +39,7 @@ public class BTMCommand implements CommandExecutor {
 					api.removeDisguise(player);
 					
 					EntityType type = this.parseType(args[1]);
+					
 					if(type != null) {
 						if(this.hasPerms(player, "btm.disguise.mob."+args[1]) || this.hasPerms(player, "btm.disguise.mob.*")) {
 							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, type);
@@ -99,6 +95,9 @@ public class BTMCommand implements CommandExecutor {
 					}
 				} else
 					err(player, "You are not disguised");
+			} else if(args[0].equalsIgnoreCase("reload")){
+				BeTheMob.instance.reloadConfig();
+				inf(player, "Configuration reloaded!");
 			} else
 				err(player, "Invalid argument, try 'mob','player' or 'off'");
 		} else
@@ -133,15 +132,10 @@ public class BTMCommand implements CommandExecutor {
 	}
 	
 	private EntityType parseType(String toParse) {
-		try {
-			EntityType type = EntityType.valueOf(toParse.toUpperCase());
-			Class<? extends Entity> mobClass = type.getEntityClass();
-			if(!mobClass.isAssignableFrom(Monster.class) && !mobClass.isAssignableFrom(Animals.class) && !mobClass.isAssignableFrom(NPC.class) && !mobClass.isAssignableFrom(Ambient.class))
-				return null;
-			else
+		for(EntityType type : EntityType.values()){
+			if(type.toString().equalsIgnoreCase(toParse))
 				return type;
-		} catch(Exception e) {
-			return null;
 		}
+		return null;
 	}
 }
