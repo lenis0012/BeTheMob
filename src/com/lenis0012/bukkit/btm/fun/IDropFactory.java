@@ -17,5 +17,4 @@ public interface IDropFactory {
 	 * @return The name of the drop factory
 	 */
 	public String getName();
-	
 }
