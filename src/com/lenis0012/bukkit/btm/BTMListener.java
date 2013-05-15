@@ -1,5 +1,7 @@
 package com.lenis0012.bukkit.btm;
 
+import java.util.Set;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -22,6 +24,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
+import org.bukkit.inventory.ItemStack;
 
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
@@ -229,10 +232,22 @@ public class BTMListener implements Listener {
 	}
 	
 	@EventHandler (priority = EventPriority.MONITOR)
-	public void onPlayerDeath(PlayerDeathEvent event) {
+	public void onPlayerDeath(final PlayerDeathEvent event) {
 		final Player player = event.getEntity();
 		final BeTheMob plugin = BeTheMob.instance;
 		final String name = player.getName();
+		
+		if(BeTheMob.instance.getConfig().getBoolean("drop_real_item") && plugin.disguises.containsKey(name)){
+			event.getDrops().clear();
+			Set<ItemStack> items = BeTheMob.instance.getDropFactory().getDrops(BeTheMob.getApi().getDisguise(player));
+			BeTheMob.instance.getLogger().info("Dropping "+items.size()+" items for "+name+".");
+			if(items != null){
+				for(ItemStack item : items){
+					if(item != null)
+						event.getDrops().add(item);
+				}
+			}
+		}
 		
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -241,6 +256,7 @@ public class BTMListener implements Listener {
 				if(plugin.disguises.containsKey(name)) {
 					Disguise dis = plugin.disguises.get(name);
 					dis.kill();
+					
 				}
 			}
 			
