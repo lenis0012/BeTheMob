@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.logging.Logger;
 
+import net.sf.cglib.proxy.Callback;
+import net.sf.cglib.proxy.CallbackFilter;
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
+import net.sf.cglib.proxy.NoOp;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -20,13 +27,6 @@ import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
 import com.lenis0012.bukkit.btm.nms.wrappers.PlayerConnection;
 import com.lenis0012.bukkit.btm.util.DynamicUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
-
-import net.sf.cglib.proxy.Callback;
-import net.sf.cglib.proxy.CallbackFilter;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
-import net.sf.cglib.proxy.NoOp;
 
 public class PlayerConnectionCallback implements MethodInterceptor, CallbackFilter {
 	private static Logger log = Logger.getLogger("Minecraft");
