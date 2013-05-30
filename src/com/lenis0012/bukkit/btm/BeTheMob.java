@@ -1,14 +1,18 @@
 package com.lenis0012.bukkit.btm;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,6 +23,7 @@ import com.lenis0012.bukkit.btm.fun.IDropFactory;
 import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
 import com.lenis0012.bukkit.btm.nms.ProtocolLibManager;
 import com.lenis0012.bukkit.btm.util.DynamicUtil;
+import com.lenis0012.bukkit.btm.util.FileUtil;
 import com.lenis0012.bukkit.btm.util.MathUtil;
 
 public class BeTheMob extends JavaPlugin {
@@ -32,6 +37,7 @@ public class BeTheMob extends JavaPlugin {
 	public boolean protLib = false;
 	private ProtocolLibManager protocol;
 	public Logger log = Logger.getLogger("Minecraft");
+	private FileConfiguration typeConfig;
 	
 	private static final int MAX_VERSION = 152;
 	private static final int MIN_VERSION = 151;
@@ -69,7 +75,26 @@ public class BeTheMob extends JavaPlugin {
 				PlayerConnectionCallback.hook(player);
 			}
 		}
-        saveDefaultConfig();//Saves the default config. Will not overwrite
+		
+		File configFile = new File(this.getDataFolder(), "config.yml");
+		if(!configFile.exists()) {
+			try {
+				FileUtil.copy(this.getResource("config.yml"), configFile);
+			} catch (Exception e) {
+				this.getLogger().log(Level.SEVERE, "Failed to create config.yml", e);
+			}
+		}
+		
+		File typesFile = new File(this.getDataFolder(), "types.yml");
+		if(!typesFile.exists()) {
+			try {
+				FileUtil.copy(this.getResource("types.yml"), typesFile);
+			} catch (Exception e) {
+				this.getLogger().log(Level.SEVERE, "Failed to create config.yml", e);
+			}
+		}
+		
+		this.typeConfig = YamlConfiguration.loadConfiguration(typesFile);
         if(getConfig().get("drop_real_item") == null){
         	getConfig().set("drop_real_item", false);
         	saveConfig();
@@ -162,5 +187,23 @@ public class BeTheMob extends JavaPlugin {
 	 */
 	public IDropFactory getDropFactory() {
 		return api.getDropFactory();
+	}
+	
+	/**
+	 * Get all whitelisted mob types
+	 * 
+	 * @return Whitelisted mob types
+	 */
+	public List<String> getMobList() {
+		return typeConfig.getStringList("mobs");
+	}
+	
+	/**
+	 * Get all whitelisted vehicles
+	 * 
+	 * @return Whitelisted vehicles
+	 */
+	public List<String> getVehicleList() {
+		return typeConfig.getStringList("vehicles");
 	}
 }

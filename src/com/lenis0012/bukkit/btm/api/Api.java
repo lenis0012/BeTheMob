@@ -59,7 +59,8 @@ public class Api {
 	 */
 	public Disguise createDisguise(Player player, Location loc, EntityType type, List<String> extras) {
 		if(extras == null) extras = new ArrayList<String>();
-		return new Disguise(player, plugin.nextID--, loc, type, extras);
+		boolean isVehicle = plugin.getVehicleList().contains(type.toString().toLowerCase());
+		return new Disguise(player, plugin.nextID--, loc, type, extras, isVehicle);
 	}
 	
 	/**

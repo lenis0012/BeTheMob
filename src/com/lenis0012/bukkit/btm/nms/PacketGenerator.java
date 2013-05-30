@@ -199,6 +199,36 @@ public class PacketGenerator implements IPacketGenerator{
 		
 		return packet;
 	}
+	
+
+	@Override
+	public Packet getVehicleSpawnPacket() {
+		//Creae packet
+		Packet packet = new Packet("Packet23VehicleSpawn");
+		Location loc = dis.getLocation();
+		EntityType type = dis.getDisguiseType();
+		
+		//Generate info
+		int x = MathUtil.floor(loc.getX() * 32.0D);
+		int y = MathUtil.floor(loc.getY() * 32.0D);
+		int z = MathUtil.floor(loc.getZ() * 32.0D);
+		int yaw = MathUtil.floor(loc.getYaw());
+		int pitch = MathUtil.floor(loc.getPitch());
+		
+		//Write data to packet
+		packet.write("a", dis.getEntityId());
+		packet.write("j", type.getTypeId());
+		packet.write("b", x);
+		packet.write("c", y);
+		packet.write("d", z);
+		packet.write("h", yaw);
+		packet.write("i", pitch);
+		packet.write("e", 0);
+		packet.write("f", 0);
+		packet.write("g", 0);
+		
+		return packet;
+	}
 
 	@Override
 	public Packet getArmAnimationPacket(int animation) {

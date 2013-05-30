@@ -7,9 +7,9 @@ public class MathUtil {
 	/**
 	 * Floor a double to an integer
 	 * 
-	 * @param value		Value to floor
+	 * @param value	Value to floor
 	 * 
-	 * @return			Floored double
+	 * @return Floored double
 	 */
 	public static int floor(double value) {
 		int floored = (int)value;
@@ -51,5 +51,27 @@ public class MathUtil {
 		}
 		
 		return par1Int;
+	}
+	
+	/**
+	 * Floor a float
+	 * 
+	 * @param value Float to floor
+	 * @return flored float
+	 */
+	public static int floor(float value) {
+		int rounded = (int) value;
+		return value < rounded ? rounded - 1 : rounded;
+	}
+	
+	/**
+	 * Roof a double
+	 * 
+	 * @param value Double to roof
+	 * @return roofed value
+	 */
+	public static int roof(double value) {
+		int rounded = (int) value;
+		return rounded < value ? rounded + 1 : rounded;
 	}
 }

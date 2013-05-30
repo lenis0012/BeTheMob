@@ -25,6 +25,7 @@ import com.lenis0012.bukkit.btm.util.NetworkUtil;
  */
 public class Disguise {
 	private boolean isPlayer = false;
+	private boolean isVehicle = false;
 	private Location loc;
 	private String name;
 	private int itemInHand;
@@ -49,7 +50,8 @@ public class Disguise {
 		this.gen = new PacketGenerator(this);
 	}
 	
-	public Disguise(Player player, int EntityID, Location loc, EntityType type, List<String> extras) {
+	public Disguise(Player player, int EntityID, Location loc, EntityType type, List<String> extras, boolean isVehicle) {
+		this.isVehicle = isVehicle;
 		this.EntityID = EntityID;
 		this.loc = loc;
 		this.type = type;
@@ -62,10 +64,28 @@ public class Disguise {
 	/**
 	 * Check if the type is a player
 	 * 
-	 * @return Tupe is a player
+	 * @return Type is a player
 	 */
 	public boolean isPlayer() {
 		return this.isPlayer;
+	}
+	
+	/**
+	 * Check if the type is a vehicle
+	 * 
+	 * @return Type is vehicle
+	 */
+	public boolean isVehicle() {
+		return this.isVehicle;
+	}
+	
+	/**
+	 * Check if the type is a mob
+	 * 
+	 * @return Type is mob
+	 */
+	public boolean isMob() {
+		return !isPlayer && !isVehicle;
 	}
 	
 	/**
@@ -124,9 +144,10 @@ public class Disguise {
 		if(this.spawned) {
 			if(isPlayer) {
 				NetworkUtil.sendPacket(gen.getNamedEntitySpawnPacket(), player);
-			} else {
+			} else if(!isVehicle) {
 				NetworkUtil.sendPacket(gen.getMobSpawnPacket(), player);
-			}
+			} else
+				NetworkUtil.sendPacket(gen.getVehicleSpawnPacket(), player);
 		}
 	}
 	
@@ -141,10 +162,11 @@ public class Disguise {
 			dw.set(0, Byte.valueOf((byte) 0));
 			dw.set(12, Integer.valueOf((int) 0));
 			NetworkUtil.sendGlobalPacket(gen.getNamedEntitySpawnPacket(), world, this.getPlayer());
-		} else {
+		} else if(!isVehicle) {
 			dw = MetaDataUtil.getDataWatcher(type, extras);
 			NetworkUtil.sendGlobalPacket(gen.getMobSpawnPacket(), world, this.getPlayer());
-		}
+		} else
+			NetworkUtil.sendGlobalPacket(gen.getVehicleSpawnPacket(), world, this.getPlayer());
 		
 		this.spawned = true;
 	}

@@ -38,10 +38,33 @@ public class BTMCommand implements CommandExecutor {
 				if(args.length > 1) {
 					api.removeDisguise(player);
 					
-					EntityType type = this.parseType(args[1]);
+					EntityType type = this.parseType(args[1], false);
 					
 					if(type != null) {
 						if(this.hasPerms(player, "btm.disguise.mob."+args[1]) || this.hasPerms(player, "btm.disguise.mob.*")) {
+							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, type);
+							pm.callEvent(ev);
+							if(!ev.isCancelled()) {
+								Location loc = player.getLocation();
+								List<String> extras = this.parseExtras(args, player);
+								Disguise dis = api.createDisguise(player, loc, type, extras);
+								api.addDisguise(player, dis);
+								inf(player, "Succesfully diguised as a "+args[1]);
+							}
+						} else
+							err(player, "Not enough permissions");
+					} else
+						err(player, "Invalid entity type");
+				} else
+					err(player, "Invalid arguments");
+			} else if(args[0].equalsIgnoreCase("vehicle")) {
+				if(args.length > 1) {
+					api.removeDisguise(player);
+					
+					EntityType type = this.parseType(args[1], true);
+					
+					if(type != null) {
+						if(this.hasPerms(player, "btm.disguise.vehicle."+args[1]) || this.hasPerms(player, "btm.disguise.vehicle.*")) {
 							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, type);
 							pm.callEvent(ev);
 							if(!ev.isCancelled()) {
@@ -96,10 +119,20 @@ public class BTMCommand implements CommandExecutor {
 				} else
 					err(player, "You are not disguised");
 			} else if(args[0].equalsIgnoreCase("reload")){
-				BeTheMob.instance.reloadConfig();
+				plugin.reloadConfig();
 				inf(player, "Configuration reloaded!");
+			} else if(args[0].equalsIgnoreCase("list")) {
+				List<String> list = plugin.getMobList();
+				player.sendMessage(ChatColor.GOLD + "Mob types: ");
+				for(String message : this.getMessages(list))
+					player.sendMessage(message);
+				
+				list = plugin.getVehicleList();
+				player.sendMessage(" \n" + ChatColor.GOLD + "Vehicle types: ");
+				for(String message : this.getMessages(list))
+					player.sendMessage(message);
 			} else
-				err(player, "Invalid argument, try 'mob','player' or 'off'");
+				err(player, "Invalid argument, try mob, player, vehicle, list or off");
 		} else
 			err(player, "Usage: "+cmd.getUsage());
 		
@@ -131,11 +164,34 @@ public class BTMCommand implements CommandExecutor {
 		player.sendMessage(ChatColor.RED+err);
 	}
 	
-	private EntityType parseType(String toParse) {
+	private EntityType parseType(String toParse, boolean isMob) {
+		BeTheMob plugin = BeTheMob.instance;
+		if(isMob && !plugin.getMobList().contains(toParse.toLowerCase()))
+			return null;
+		else if(!isMob && !plugin.getVehicleList().contains(toParse.toUpperCase()))
+			return null;
+		
 		for(EntityType type : EntityType.values()){
 			if(type.toString().equalsIgnoreCase(toParse))
 				return type;
 		}
 		return null;
+	}
+	
+	private String[] getMessages(List<String> list) {
+		List<String> messages = new ArrayList<String>();
+		String current = "";
+		int i = 100;
+		for(String message : list) {
+			if(i - (message.length() + 2) < 0) {
+				messages.add(current);
+				i = 100;
+			}
+			
+			current += i < 100 ? ", " + message : message;
+		}
+		
+		messages.add(current);
+		return messages.toArray(new String[0]);
 	}
 }

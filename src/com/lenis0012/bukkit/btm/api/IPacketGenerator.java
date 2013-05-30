@@ -27,6 +27,13 @@ public interface IPacketGenerator {
 	public Packet getNamedEntitySpawnPacket();
 	
 	/**
+	 * Get the vehicle spawn packet for a disguise
+	 * 
+	 * @return Packet
+	 */
+	public Packet getVehicleSpawnPacket();
+	
+	/**
 	 * Get the entity look packet for a disguise
 	 * 
 	 * @return
