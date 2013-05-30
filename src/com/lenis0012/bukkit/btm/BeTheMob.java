@@ -10,13 +10,11 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.lenis0012.bukkit.btm.api.Api;
 import com.lenis0012.bukkit.btm.api.Disguise;
-import com.lenis0012.bukkit.btm.fun.DropFactory;
 import com.lenis0012.bukkit.btm.fun.IDropFactory;
 import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
 import com.lenis0012.bukkit.btm.nms.ProtocolLibManager;
@@ -34,7 +32,6 @@ public class BeTheMob extends JavaPlugin {
 	public boolean protLib = false;
 	private ProtocolLibManager protocol;
 	public Logger log = Logger.getLogger("Minecraft");
-	private IDropFactory dropFactory;
 	
 	private static final int MAX_VERSION = 152;
 	private static final int MIN_VERSION = 151;
@@ -57,7 +54,6 @@ public class BeTheMob extends JavaPlugin {
 		task = new BTMTaskManager(this);
 		task.start();
 		
-		dropFactory = new DropFactory();//Setup basic drop factory
 		api = new Api(this);
 		
 		
@@ -108,7 +104,7 @@ public class BeTheMob extends JavaPlugin {
 	/**
 	 * Get the api from the plugins
 	 * 
-	 * @return				API
+	 * @return API
 	 */
 	public static Api getApi() {
 		return api;
@@ -117,8 +113,8 @@ public class BeTheMob extends JavaPlugin {
 	/**
 	 * Hide a player from the orthers
 	 * 
-	 * @param player		Player to hide
-	 * @param value			Unhide or hide the player
+	 * @param player Player to hide
+	 * @param value Unhide or hide the player
 	 */
 	public void setHidden(Player player, boolean value) {
 		String name = player.getName();
@@ -138,21 +134,11 @@ public class BeTheMob extends JavaPlugin {
 	}
 	
 	/**
-	 * Changes the drop factory allowing plugins to control what items a disguise drops
-	 * @param factory The drop factory to be registered
-	 * @param plugin The plugin that is registering the factory
-	 */
-	public void registerDropFactory(IDropFactory factory, Plugin plugin) {
-		this.dropFactory = factory;
-		getLogger().info("Plugin "+plugin.getName()+" has registered drop manager "+factory.getName());
-	}
-	
-	/**
 	 * Check if a player is hidden
 	 * 
-	 * @param player		Player to check
+	 * @param player Player to check
 	 * 
-	 * @return				Player is hidden?
+	 * @return Player is hidden?
 	 */
 	public boolean isHidden(Player player) {
 		String name = player.getName();
@@ -160,11 +146,21 @@ public class BeTheMob extends JavaPlugin {
 		return hidden.contains(name);
 	}
 	
+	/**
+	 * Get the plugin ClassLoader
+	 * 
+	 * @return Plugin ClassLoader
+	 */
 	public ClassLoader getLoader() {
 		return this.getClassLoader();
 	}
 
+	/**
+	 * Get the current drop facotry of the plugin
+	 * 
+	 * @return Drop factory
+	 */
 	public IDropFactory getDropFactory() {
-		return dropFactory;
+		return api.getDropFactory();
 	}
 }

@@ -6,9 +6,12 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import com.lenis0012.bukkit.btm.BTMTaskManager;
 import com.lenis0012.bukkit.btm.BeTheMob;
+import com.lenis0012.bukkit.btm.fun.DropFactory;
+import com.lenis0012.bukkit.btm.fun.IDropFactory;
 
 /**
  * API class from BeTheMob
@@ -17,9 +20,11 @@ import com.lenis0012.bukkit.btm.BeTheMob;
  */
 public class Api {
 	private BeTheMob plugin;
+	private IDropFactory dropFactory;
 	
 	public Api(BeTheMob plugin) {
 		this.plugin = plugin;
+		this.dropFactory = new DropFactory();
 	}
 	
 	/**
@@ -94,7 +99,7 @@ public class Api {
 	/**
 	 * Remove the disguise from a player
 	 * 
-	 * @param player		Player to remove from disguise list
+	 * @param player Player to remove from disguise list
 	 */
 	public void removeDisguise(Player player) {
 		String name = player.getName();
@@ -106,5 +111,25 @@ public class Api {
 			plugin.setHidden(player, false);
 			BTMTaskManager.notifyPlayerUndisguised(name);
 		}
+	}
+	
+	/**
+	 * Register a drop factory
+	 * 
+	 * @param dropFactory Drop Factory
+	 * @param plugin Plugin who owns factory
+	 */
+	public void registerDropFactory(IDropFactory dropFactory, Plugin plugin) {
+		this.dropFactory = dropFactory;
+		plugin.getLogger().info("Drop factory '"+dropFactory.getName()+"' was registered by plugin: " + plugin.getName());
+	}
+	
+	/**
+	 * Gets the current drop factory
+	 * 
+	 * @return DropFactory
+	 */
+	public IDropFactory getDropFactory() {
+		return dropFactory;
 	}
 }
