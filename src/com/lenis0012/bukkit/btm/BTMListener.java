@@ -29,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.events.HerdEntityInteractEvent;
 import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
+import com.lenis0012.bukkit.btm.util.HerdUtil;
 
 public class BTMListener implements Listener {
 	@EventHandler (priority=EventPriority.MONITOR)
@@ -39,6 +40,12 @@ public class BTMListener implements Listener {
 			//left click
 			evt.getEntityInteractedWith().damage();
 			evt.getEntityInteractedWith().playHurtSound();
+			evt.getEntityInteractedWith().knockback();
+			evt.getEntityInteractedWith().health-=HerdUtil.getDamageDealt(evt.getPlayer().getItemInHand());
+			System.out.println(evt.getEntityInteractedWith().health);
+			if(evt.getEntityInteractedWith().health<=0) {
+				evt.getEntityInteractedWith().kill();
+			}
 		}
 	}
 	@EventHandler (priority=EventPriority.MONITOR)

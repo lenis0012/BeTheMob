@@ -11,7 +11,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
+import com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.BlockLoader;
 import com.lenis0012.bukkit.btm.BeTheMob;
 import com.lenis0012.bukkit.btm.api.IPacketGenerator;
 import com.lenis0012.bukkit.btm.api.Movement;
@@ -30,14 +32,20 @@ public class HerdEntity {
 	private boolean spawned = false;
 	private Movement movement;
 	private DataWatcher dw;
+	BlockLoader loader;
 	private List<String> extras = new ArrayList<String>();
+	private ArrayList<Location> destinations = new ArrayList<Location>();
 	//Extras is currently unimplemented
 	private IPacketGenerator gen;
+	public int health;
 	public HerdEntity(int EntityID, Location loc, String name, int itemInHand, EntityType type) {
 		this.setEntityID(EntityID);
 		this.setLocation(loc);
 		this.setName(name);
 		this.setItemInHand(itemInHand);
+		initHealth();
+		loader = new BlockLoader(getLocation());
+		loader.loadBlocks(20);
 		gen = new PacketGenerator(this);
 	}
 	public HerdEntity(int EntityID, Location loc, int itemInHand, EntityType type) {
@@ -45,6 +53,9 @@ public class HerdEntity {
 		this.setLocation(loc);
 		this.setItemInHand(itemInHand);
 		this.type=type;
+		initHealth();
+		loader = new BlockLoader(getLocation());
+		loader.loadBlocks(20);
 		gen = new PacketGenerator(this);
 	}
 	public String getName() {
@@ -262,6 +273,17 @@ public class HerdEntity {
 	public void damage() {
 		NetworkUtil.sendGlobalPacket(gen.getArmAnimationPacket(2), loc.getWorld());
 	}
+	/**
+	 * Make the entity fly backwards
+	 */
+	public void knockback() {
+		short velx = 0;
+		short vely = 5;
+		short velz = 5;
+		loc.setY(loc.getY()+5);
+		loc.setZ(loc.getZ()+5);
+		NetworkUtil.sendGlobalPacket(gen.getEntityVelocityPacket(new Vector(velx, vely, velz)), getLocation().getWorld());
+	}
 	
 	/**
 	 * Make the entity crouch
@@ -391,5 +413,53 @@ public class HerdEntity {
 		return isHumanoid() || getType() == EntityType.ENDERMAN;
 	}
 	public void update() {
+	}
+	public void initHealth() {
+    	if(type == EntityType.BAT){
+    		health = 6;
+    	} else if(type == EntityType.BLAZE){
+    		health = 20;
+    	} else if(type == EntityType.CAVE_SPIDER){
+    		health = 12;
+    	} else if(type == EntityType.SPIDER) {
+    		health = 16;
+    	}
+    	else if(type == EntityType.CHICKEN){
+    		health = 4;
+    	}else if(type == EntityType.COW || type == EntityType.MUSHROOM_COW){
+    		health = 10;
+    	}else if(type == EntityType.CREEPER){
+    		health = 20;
+    	}else if(type == EntityType.ENDER_DRAGON){
+    		health = 200;
+    	}else if(type == EntityType.ENDERMAN){
+    		health = 40;
+    	}else if(type == EntityType.GHAST){
+    		health = 10;
+    	}else if(type == EntityType.IRON_GOLEM){
+    		health = 100;
+    	}else if(type == EntityType.MAGMA_CUBE || type == EntityType.SLIME){
+    		health = 16;
+    				//default health for a big slime
+    	}else if(type == EntityType.OCELOT){
+    		health = 10;
+    	}else if(type == EntityType.PIG){
+    		health = 10;
+    	} else if(type == EntityType.PIG_ZOMBIE){
+    		health = 20;
+    	}else if(isPlayer){
+    		health = 20;
+    	}else if(type == EntityType.SHEEP){
+    		health = 8;
+    	}else if(type == EntityType.SILVERFISH){
+    		health = 8;
+    	}else if(type == EntityType.SKELETON){
+    		health = 20;
+    	}else if(type == EntityType.WITHER){
+    		health = 300;
+    	}else if(type == EntityType.ZOMBIE){
+    		health = 20;
+    	}
+		
 	}
 }

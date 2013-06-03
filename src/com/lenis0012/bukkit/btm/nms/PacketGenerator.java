@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import com.dylanisawesome1.bukkit.btm.Herds.HerdEntity;
 import com.lenis0012.bukkit.btm.api.Disguise;
@@ -177,6 +178,19 @@ public class PacketGenerator implements IPacketGenerator {
 		packet.write("f", pitch);
 		packet.write("g", true);
 
+		return packet;
+	}
+
+	@Override
+	public Packet getEntityVelocityPacket(Vector velocity) {
+		Packet packet = new Packet("Packet28EntityVelocity");
+		if(dis != null)
+			packet.write("a", dis.getEntityId());
+		else
+			packet.write("a", ent.getEntityId());
+		packet.write("b", (short)velocity.getX());
+		packet.write("c", (short)velocity.getY());
+		packet.write("d", (short)velocity.getZ());
 		return packet;
 	}
 

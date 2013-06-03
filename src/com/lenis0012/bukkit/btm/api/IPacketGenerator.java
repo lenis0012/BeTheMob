@@ -2,6 +2,7 @@ package com.lenis0012.bukkit.btm.api;
 
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
 
@@ -70,7 +71,12 @@ public interface IPacketGenerator {
 	 * @return Packet
 	 */
 	public Packet getEntityMoveLookPacket(Movement movement);
-	
+	/**
+	 * Get the entity set velocity packet
+	 * @param Velocity - The entitie's velocity
+	 * @return Packet
+	 */
+	public Packet getEntityVelocityPacket(Vector velocity);
 	/**
 	 * Get the arm animation packet
 	 * 
