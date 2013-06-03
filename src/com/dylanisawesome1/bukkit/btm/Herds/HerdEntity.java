@@ -1,5 +1,6 @@
-package com.lenis0012.bukkit.btm.api;
+package com.dylanisawesome1.bukkit.btm.Herds;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -9,134 +10,89 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.lenis0012.bukkit.btm.BeTheMob;
+import com.lenis0012.bukkit.btm.api.IPacketGenerator;
+import com.lenis0012.bukkit.btm.api.Movement;
 import com.lenis0012.bukkit.btm.nms.PacketGenerator;
 import com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
 import com.lenis0012.bukkit.btm.util.MetaDataUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
 
-/**
- * Data wrapper of a player disguise
- * 
- * @author lenis0012
- */
-public class Disguise {
+public class HerdEntity {
 	private boolean isPlayer = false;
-	private boolean isVehicle = false;
 	private Location loc;
 	private String name;
 	private int itemInHand;
 	private EntityType type;
 	private int EntityID;
 	private boolean spawned = false;
-	private Player player;
-	private List<String> extras;
 	private Movement movement;
 	private DataWatcher dw;
+	private List<String> extras = new ArrayList<String>();
+	//Extras is currently unimplemented
 	private IPacketGenerator gen;
-	
-	public Disguise(Player player, int EntityID, Location loc, String name, int itemInHand) {
-		this.isPlayer = true;
-		this.loc = loc;
-		this.type = EntityType.PLAYER;
-		this.EntityID = EntityID;
-		this.name = name;
-		this.itemInHand = itemInHand;
-		this.player = player;
-		this.movement = new Movement(loc);
-		this.gen = new PacketGenerator(this);
+	public HerdEntity(int EntityID, Location loc, String name, int itemInHand, EntityType type) {
+		this.setEntityID(EntityID);
+		this.setLocation(loc);
+		this.setName(name);
+		this.setItemInHand(itemInHand);
+		gen = new PacketGenerator(this);
 	}
-	
-	public Disguise(Player player, int EntityID, Location loc, EntityType type, List<String> extras, boolean isVehicle) {
-		this.isVehicle = isVehicle;
-		this.EntityID = EntityID;
-		this.loc = loc;
-		this.type = type;
-		this.player = player;
-		this.extras = extras;
-		this.movement = new Movement(loc);
-		this.gen = new PacketGenerator(this);
+	public HerdEntity(int EntityID, Location loc, int itemInHand, EntityType type) {
+		this.setEntityID(EntityID);
+		this.setLocation(loc);
+		this.setItemInHand(itemInHand);
+		this.type=type;
+		gen = new PacketGenerator(this);
 	}
-	
-	/**
-	 * Check if the type is a player
-	 * 
-	 * @return Type is a player
-	 */
-	public boolean isPlayer() {
-		return this.isPlayer;
-	}
-	
-	/**
-	 * Check if the type is a vehicle
-	 * 
-	 * @return Type is vehicle
-	 */
-	public boolean isVehicle() {
-		return this.isVehicle;
-	}
-	
-	/**
-	 * Check if the type is a mob
-	 * 
-	 * @return Type is mob
-	 */
-	public boolean isMob() {
-		return !isPlayer && !isVehicle;
-	}
-	
-	/**
-	 * Get the location of the disguise
-	 * 
-	 * @return Location
-	 */
-	public Location getLocation() {
-		return this.loc;
-	}
-	
-	/**
-	 * Get the disguised player
-	 * 
-	 * @return Player
-	 */
-	public Player getPlayer() {
-		return this.player;
-	}
-	
-	/**
-	 * @return The disguises custom name
-	 */
-	public String getCustomName(){
+	public String getName() {
 		return name;
 	}
-	
-	/**
-	 * Get the custom entity id of the disguise
-	 * 
-	 * @return EntityId
-	 */
+	public void setName(String name) {
+		this.name = name;
+	}
 	public int getEntityId() {
-		return this.EntityID;
+		return EntityID;
 	}
-	
-	public DataWatcher getDataWatcher() {
-		return this.dw;
+	public void setEntityID(int entityID) {
+		EntityID = entityID;
 	}
-	
-	/**
-	 * Set the location of the disguise
-	 * 
-	 * @param loc Location
-	 */
+	public EntityType getType() {
+		return type;
+	}
+	public void setType(EntityType type) {
+		this.type = type;
+	}
+	public Movement getMovement() {
+		return movement;
+	}
+	public void setMovement(Movement movement) {
+		this.movement = movement;
+	}
+	public void setItemInHand(int itemInHand) {
+		this.itemInHand = itemInHand;
+	}
+	public boolean isPlayer() {
+		return isPlayer;
+	}
+	public void setPlayer(boolean isPlayer) {
+		this.isPlayer = isPlayer;
+	}
+	public Location getLocation() {
+		return loc;
+	}
 	public void setLocation(Location loc) {
 		this.loc = loc;
 	}
-	
-	/**
-	 * Spawn the disguise for a player
+	public DataWatcher getDatawatcher() {
+		return dw;
+	}
+	public void setDatawatcher(DataWatcher dw) {
+		this.dw = dw;
+	}	/**
+	 * Spawn the entity for a player
 	 * 
 	 * @param player Player to recive spawn packet
 	 */
@@ -144,15 +100,14 @@ public class Disguise {
 		if(this.spawned) {
 			if(isPlayer) {
 				NetworkUtil.sendPacket(gen.getNamedEntitySpawnPacket(), player);
-			} else if(!isVehicle) {
+			} else{
 				NetworkUtil.sendPacket(gen.getMobSpawnPacket(), player);
-			} else
-				NetworkUtil.sendPacket(gen.getVehicleSpawnPacket(), player);
+			}
 		}
 	}
 	
 	/**
-	 * Spawn the disguise for a world
+	 * Spawn the entity for a world
 	 * 
 	 * @param world World to recive packet
 	 */
@@ -161,31 +116,29 @@ public class Disguise {
 			dw = new DataWatcher();
 			dw.set(0, Byte.valueOf((byte) 0));
 			dw.set(12, Integer.valueOf((int) 0));
-			NetworkUtil.sendGlobalPacket(gen.getNamedEntitySpawnPacket(), world, this.getPlayer());
-		} else if(!isVehicle) {
+			NetworkUtil.sendGlobalPacket(gen.getNamedEntitySpawnPacket(), world);
+		} else{
 			dw = MetaDataUtil.getDataWatcher(type, extras);
-			NetworkUtil.sendGlobalPacket(gen.getMobSpawnPacket(), world, this.getPlayer());
-		} else
-			NetworkUtil.sendGlobalPacket(gen.getVehicleSpawnPacket(), world, this.getPlayer());
-		
+			NetworkUtil.sendGlobalPacket(gen.getMobSpawnPacket(), world);
+		}
 		this.spawned = true;
 	}
 	
 	/**
-	 * Despawn the disguise
+	 * Despawn the entity
 	 */
 	public void despawn() {
 		World world = loc.getWorld();
-		NetworkUtil.sendGlobalPacket(gen.getDestroyEntityPacket(), world, this.player);
+		NetworkUtil.sendGlobalPacket(gen.getDestroyEntityPacket(), world);
 		this.spawned = false;
 	}
 	
 	/**
 	 * Kill the entity with the normal fall over animation
-	 * (Warning kills and despawns disguise)
+	 * (Warning kills and despawns entity)
 	 */
 	public void kill() {
-		NetworkUtil.sendGlobalPacket(gen.getEntityStatusPacket((byte) 3), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getEntityStatusPacket((byte) 3), loc.getWorld());
 	}
 	
 	/**
@@ -211,7 +164,7 @@ public class Disguise {
 	 * @param world	World to despawn disguise
 	 */
 	public void despawn(World world) {
-		NetworkUtil.sendGlobalPacket(gen.getDestroyEntityPacket(), world, this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getDestroyEntityPacket(), world);
 		this.spawned = false;
 	}
 	
@@ -225,50 +178,35 @@ public class Disguise {
 	}
 	
 	/**
-	 * @param player Player to change disguises item in hand for
+	 * @param item Item to change the currently held item to
 	 * slot 0 is the item in hand
 	 */
-	public void changeItem(int new_slot) {
+	public void changeItem(int new_slot, org.bukkit.inventory.ItemStack item) {
 		org.bukkit.inventory.ItemStack bukkitstack = null;
-		if(player.getInventory().getItem(new_slot) == null){
+		if(item == null){
 			bukkitstack = new org.bukkit.inventory.ItemStack(Material.AIR, 1);
 		}else{
-			bukkitstack = player.getInventory().getItem(new_slot);
+			bukkitstack = item;
 		}
 		this.itemInHand = bukkitstack.getTypeId();
-		NetworkUtil.sendGlobalPacket(gen.getEntityEquipmentPacket(0, bukkitstack), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getEntityEquipmentPacket(0, bukkitstack), loc.getWorld());
 	}
 	
 	/**
-	 * @param player Player to set disguises armor
+	 * @param armor What type of armor to put on entity
 	 * @param slot Which armour slot
 	 * 1 boots
 	 * 2 leggings
 	 * 3 chestplate
 	 * 4 helmet
 	 */
-	public void changeArmor(int slot) {
-		org.bukkit.inventory.ItemStack bukkitstack = null;
-		switch(slot){
-		case 1:
-			bukkitstack = player.getInventory().getBoots();
-			break;
-		case 2:
-			bukkitstack = player.getInventory().getLeggings();
-			break;
-		case 3:
-			bukkitstack = player.getInventory().getChestplate();
-			break;
-		case 4:
-			bukkitstack = player.getInventory().getHelmet();
-			break;
-		default:
-			return;
-		}
+	public void changeArmor(int slot, org.bukkit.inventory.ItemStack armor) {
+		org.bukkit.inventory.ItemStack bukkitstack = armor;
+		
 		if(bukkitstack == null){
 			bukkitstack = new org.bukkit.inventory.ItemStack(Material.AIR);
 		}
-		NetworkUtil.sendGlobalPacket(gen.getEntityEquipmentPacket(slot, bukkitstack), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getEntityEquipmentPacket(slot, bukkitstack), loc.getWorld());
 	}
 	
 	/**
@@ -285,44 +223,44 @@ public class Disguise {
 		
 		if(moved) {
 			movement.update(to);
-			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), world, this.getPlayer());
+			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), world);
 		} else
-			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), world, this.getPlayer());
-		NetworkUtil.sendGlobalPacket(gen.getEntityHeadRotatePacket(), world, this.getPlayer());
+			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), world);
+		NetworkUtil.sendGlobalPacket(gen.getEntityHeadRotatePacket(), world);
 	}
 	
 	/**
-	 * Teleport the disguise
+	 * Teleport the entity
 	 * 
 	 * @param loc Location to teleport to
 	 */
 	public void teleport(Location loc) {
 		this.loc = loc;
-		NetworkUtil.sendGlobalPacket(gen.getEntityTeleportPacket(), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getEntityTeleportPacket(), loc.getWorld());
 		this.movement = new Movement(loc);
 	}
 	
 	/**
-	 * Swing the arm of the disguise
+	 * Swing the arm of the entity
 	 */
 	public void swingArm() {
-		NetworkUtil.sendGlobalPacket(gen.getArmAnimationPacket(1), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getArmAnimationPacket(1), loc.getWorld());
 	}
 	
 	/**
-	 * Let the disguised player damage a block
+	 * Let the entity damage a block
 	 * 
 	 * @param block	Block to damage
 	 */
 	public void damageBlock(Block block) {
-		NetworkUtil.sendGlobalPacket(gen.getBlockBreakAnimationPacket(block), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getBlockBreakAnimationPacket(block), loc.getWorld());
 	}
 	
 	/**
-	 * Notify the disguised player got damaged
+	 * Notify the entity got damaged
 	 */
 	public void damage() {
-		NetworkUtil.sendGlobalPacket(gen.getArmAnimationPacket(2), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getArmAnimationPacket(2), loc.getWorld());
 	}
 	
 	/**
@@ -348,18 +286,18 @@ public class Disguise {
 	}
 	
 	public void updateMetaData() {
-		NetworkUtil.sendGlobalPacket(gen.getEntityMetadataPacket(), loc.getWorld(), this.getPlayer());
+		NetworkUtil.sendGlobalPacket(gen.getEntityMetadataPacket(), loc.getWorld());
 	}
 	
 	/**
-	 * Refresh the movement of the disguised player
+	 * Refresh the movement of the entity
 	 */
 	public void refreshMovement() {
 		this.movement = new Movement(loc);
 	}
 	
 	/**
-	 * Get the type of the disguise
+	 * Get the type of the entity
 	 */
     public EntityType getDisguiseType() {
     	return type;
@@ -384,34 +322,18 @@ public class Disguise {
 	}
     
     public void playHurtSound() {
-        if(BeTheMob.instance.getConfig().getBoolean("play_sound_on_hurt")) {
-			if(BeTheMob.instance.getConfig().getBoolean("can_damaged_hear_sound")) {
-				player.getWorld().playSound(getLocation(), getHurtSound(), 1, 1);
-			}else{
-				for(Entity e : player.getNearbyEntities(7, 7, 7)){
-					if(e.getType() == EntityType.PLAYER){
-						((Player)e).playSound(getLocation(), getHurtSound(), 1, 1);
-					}
-				}
-			}
+        if(BeTheMob.instance.getConfig().getBoolean("play_sound_on_hurt_herd")) {
+				getWorld().playSound(getLocation(), getHurtSound(), 1, 1);
         }
-		if(BeTheMob.instance.getConfig().getBoolean("play_sound_on_hurt")){
-			if(BeTheMob.instance.getConfig().getBoolean("can_damaged_hear_sound")){
-				player.getWorld().playSound(player.getLocation(), this.getHurtSound(), 1, 1);
-			}else{
-				for(Entity e : player.getNearbyEntities(7, 7, 7)){
-					if(e.getType() == EntityType.PLAYER){
-						((Player)e).playSound(player.getLocation(), this.getHurtSound(), 1, 1);
-					}
-				}
-			}
-		}
     
     }
     
-    /**
+    private World getWorld() {
+		return getLocation().getWorld();
+	}
+	/**
      * Gets the correct damaged sound
-     * If the disguise is a zombie it will be a zombie one
+     * If the entity is a zombie it will be a zombie one
      * Etc.
      */
     public Sound getHurtSound() {
@@ -460,5 +382,14 @@ public class Disguise {
     	
     	return null;
     }
-    
+	public boolean isHumanoid() {
+		return isPlayer() || getType() == EntityType.SKELETON
+				|| getType() == EntityType.ZOMBIE
+				|| getType() == EntityType.PIG_ZOMBIE;
+	}
+	public boolean canHoldBlocks() {
+		return isHumanoid() || getType() == EntityType.ENDERMAN;
+	}
+	public void update() {
+	}
 }

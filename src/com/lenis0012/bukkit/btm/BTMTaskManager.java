@@ -9,6 +9,7 @@ import org.bukkit.World;
 
 import org.bukkit.entity.Player;
 
+import com.dylanisawesome1.bukkit.btm.Herds.HerdUpdateManager;
 import com.lenis0012.bukkit.btm.api.Disguise;
 
 public class BTMTaskManager extends Thread {
@@ -24,6 +25,7 @@ public class BTMTaskManager extends Thread {
 	@Override
 	public void run() {
 		while(!this.isInterrupted()) {
+			HerdUpdateManager.updateHerds(plugin.herds);
 			boolean teleport = this.doTeleport <= 0;
 			synchronized(locations) {
 				for(String user : plugin.disguises.keySet()) {

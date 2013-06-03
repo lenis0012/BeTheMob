@@ -17,6 +17,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.dylanisawesome1.bukkit.btm.Herds.Herd;
+import com.dylanisawesome1.bukkit.btm.Herds.HerdUpdateManager;
 import com.lenis0012.bukkit.btm.api.Api;
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.fun.IDropFactory;
@@ -38,7 +40,7 @@ public class BeTheMob extends JavaPlugin {
 	private ProtocolLibManager protocol;
 	public Logger log = Logger.getLogger("Minecraft");
 	private FileConfiguration typeConfig;
-	
+	public ArrayList<Herd> herds = new ArrayList<Herd>();
 	private static final int MAX_VERSION = 152;
 	private static final int MIN_VERSION = 151;
 	

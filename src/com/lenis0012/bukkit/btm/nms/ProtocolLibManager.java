@@ -14,11 +14,14 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.dylanisawesome1.bukkit.btm.Herds.Herd;
 import com.lenis0012.bukkit.btm.BeTheMob;
 import com.lenis0012.bukkit.btm.api.Disguise;
+import com.lenis0012.bukkit.btm.events.HerdEntityInteractEvent;
 import com.lenis0012.bukkit.btm.events.PlayerInteractDisguisedEvent;
 import com.lenis0012.bukkit.btm.nms.wrappers.EntityPlayer;
 import com.lenis0012.bukkit.btm.nms.wrappers.Packet;
+import com.lenis0012.bukkit.btm.util.HerdUtil;
 import com.lenis0012.bukkit.btm.util.NetworkUtil;
 
 public class ProtocolLibManager {
@@ -41,7 +44,12 @@ public class ProtocolLibManager {
 				if(event.getPacketID() == Packets.Client.USE_ENTITY) {
 					int eid = packet.getIntegers().read(1);
 					int action = packet.getIntegers().read(2);
-					
+					for(Herd herd : BeTheMob.instance.herds) {
+						if(HerdUtil.getHerdEntityFromId(eid, herd.getHerdMembers())!=null) {
+							HerdEntityInteractEvent evt = new HerdEntityInteractEvent(player, HerdUtil.getHerdEntityFromId(eid, herd.getHerdMembers()), action);
+							Bukkit.getPluginManager().callEvent(evt);
+						}
+					}
 					for(String user : btm.disguises.keySet()) {
 						if(!user.equals(name)) {
 							Disguise dis = btm.disguises.get(user);

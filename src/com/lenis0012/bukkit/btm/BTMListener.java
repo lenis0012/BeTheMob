@@ -27,10 +27,20 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.lenis0012.bukkit.btm.api.Disguise;
+import com.lenis0012.bukkit.btm.events.HerdEntityInteractEvent;
 import com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
 
 public class BTMListener implements Listener {
-	
+	@EventHandler (priority=EventPriority.MONITOR)
+	public void onHerdEntityInteractedWith(HerdEntityInteractEvent evt) {
+		if(evt.isCancelled())
+			return;
+		if(evt.getAction()==1) {
+			//left click
+			evt.getEntityInteractedWith().damage();
+			evt.getEntityInteractedWith().playHurtSound();
+		}
+	}
 	@EventHandler (priority=EventPriority.MONITOR)
 	public void onCombust(final EntityCombustEvent event) {
 		if(event.isCancelled())
@@ -207,7 +217,6 @@ public class BTMListener implements Listener {
 			
 		});
 	}
-	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onBlockDamage(final BlockDamageEvent event) {
 		if(event.isCancelled())
@@ -323,7 +332,6 @@ public class BTMListener implements Listener {
 			});
 		}
 	}
-	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onPlayerToggleSneak(final PlayerToggleSneakEvent event) {
 		if(event.isCancelled())

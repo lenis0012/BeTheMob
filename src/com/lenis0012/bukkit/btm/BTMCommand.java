@@ -13,6 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
+import com.dylanisawesome1.bukkit.btm.Herds.Herd;
 import com.lenis0012.bukkit.btm.api.Api;
 import com.lenis0012.bukkit.btm.api.Disguise;
 import com.lenis0012.bukkit.btm.events.PlayerDisguiseEvent;
@@ -38,7 +39,7 @@ public class BTMCommand implements CommandExecutor {
 				if(args.length > 1) {
 					api.removeDisguise(player);
 					
-					EntityType type = this.parseType(args[1], false);
+					EntityType type = this.parseType(args[1], true);
 					
 					if(type != null) {
 						if(this.hasPerms(player, "btm.disguise.mob."+args[1]) || this.hasPerms(player, "btm.disguise.mob.*")) {
@@ -50,6 +51,10 @@ public class BTMCommand implements CommandExecutor {
 								Disguise dis = api.createDisguise(player, loc, type, extras);
 								api.addDisguise(player, dis);
 								inf(player, "Succesfully diguised as a "+args[1]);
+								Herd herd = new Herd(dis.getDisguiseType(), player);
+								herd.populateHerd(5, 20);
+								herd.spawnHerdMembers();
+								BeTheMob.instance.herds.add(herd);
 							}
 						} else
 							err(player, "Not enough permissions");
@@ -61,7 +66,7 @@ public class BTMCommand implements CommandExecutor {
 				if(args.length > 1) {
 					api.removeDisguise(player);
 					
-					EntityType type = this.parseType(args[1], true);
+					EntityType type = this.parseType(args[1], false);
 					
 					if(type != null) {
 						if(this.hasPerms(player, "btm.disguise.vehicle."+args[1]) || this.hasPerms(player, "btm.disguise.vehicle.*")) {
@@ -166,6 +171,7 @@ public class BTMCommand implements CommandExecutor {
 	
 	private EntityType parseType(String toParse, boolean isMob) {
 		BeTheMob plugin = BeTheMob.instance;
+		System.out.println(isMob);
 		if(isMob && !plugin.getMobList().contains(toParse.toLowerCase()))
 			return null;
 		else if(!isMob && !plugin.getVehicleList().contains(toParse.toUpperCase()))

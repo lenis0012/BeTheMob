@@ -3,3 +3,5 @@
 play_sound_on_hurt: true
 #If set false the person damaged can not hear themself get hurt (besides the default sound)
 can_damaged_hear_sound: false
+#If a herd member makes a sound when hurt
+play_sound_on_hurt_herd: true
