@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm.util;
+package src.com.lenis0012.bukkit.btm.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

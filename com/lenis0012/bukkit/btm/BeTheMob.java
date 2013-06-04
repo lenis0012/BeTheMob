@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm;
+package src.com.lenis0012.bukkit.btm;
 
 import java.io.File;
 import java.util.ArrayList;

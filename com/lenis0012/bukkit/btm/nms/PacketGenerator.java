@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm.nms;
+package src.com.lenis0012.bukkit.btm.nms;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;

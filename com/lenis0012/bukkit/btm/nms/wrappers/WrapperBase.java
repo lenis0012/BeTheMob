@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm.nms.wrappers;
+package src.com.lenis0012.bukkit.btm.nms.wrappers;
 
 public class WrapperBase {
 	Object handle;

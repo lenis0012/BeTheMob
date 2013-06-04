@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm.fun;
+package src.com.lenis0012.bukkit.btm.fun;
 
 import java.util.Set;
 

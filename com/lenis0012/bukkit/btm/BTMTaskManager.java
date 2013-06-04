@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm;
+package src.com.lenis0012.bukkit.btm;
 
 import java.util.HashMap;
 import java.util.Map;

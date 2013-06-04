@@ -1,4 +1,4 @@
-package com.lenis0012.bukkit.btm.events;
+package src.com.lenis0012.bukkit.btm.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
