@@ -1,6 +1,6 @@
 name: BeTheMob
 version: 1.12
-main: com.lenis0012.bukkit.btm.BeTheMob
+main: src.com.lenis0012.bukkit.btm.BeTheMob
 authors: [lenis0012, bowser123467]
 softdepend: [ProtocolLib]
 commands:
