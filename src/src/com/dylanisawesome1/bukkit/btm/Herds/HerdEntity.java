@@ -43,11 +43,13 @@ public class HerdEntity {
 	private IPacketGenerator gen;
 	private Player leader;
 	public int health;
+	long timeLastMoved;
 	public HerdEntity(int EntityID, Location loc, String name, int itemInHand, EntityType type, Player leader) {
 		this.setEntityID(EntityID);
 		this.setLocation(loc);
 		this.setName(name);
 		this.setItemInHand(itemInHand);
+		this.movement = new Movement(loc);
 		setLeader(leader);
 		initHealth();
 		loader = new BlockLoader(getLocation());
@@ -60,6 +62,7 @@ public class HerdEntity {
 		this.setItemInHand(itemInHand);
 		setLeader(leader);
 		this.type=type;
+		this.movement = new Movement(loc);
 		initHealth();
 		loader = new BlockLoader(getLocation());
 		loader.loadBlocks(20);
@@ -228,23 +231,23 @@ public class HerdEntity {
 	}
 	
 	/**
-	 * Move the disguise to a new location
-	 * 
-	 * @param event Event to get moving from
+	 * Move the entity to a new location
+	 * @param from - The location moving from
+	 * @param to - the location to move to
+	 * @param moved - whether the entity moved, or simply changed pitch/yaw
 	 */
 	public void move(Location from, Location to, boolean moved) {
 		if(!spawned)
 			return;
 		
-		World world = to.getWorld();
 		this.loc = to;
 		
 		if(moved) {
 			movement.update(to);
-			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), world);
+			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), to.getWorld());
 		} else
-			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), world);
-		NetworkUtil.sendGlobalPacket(gen.getEntityHeadRotatePacket(), world);
+			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), to.getWorld());
+		NetworkUtil.sendGlobalPacket(gen.getEntityHeadRotatePacket(), to.getWorld());
 	}
 	
 	/**
@@ -284,12 +287,13 @@ public class HerdEntity {
 	 * Make the entity fly backwards
 	 */
 	public void knockback() {
-		short velx = 0;
+		//doesn't work currently
+/*		short velx = 0;
 		short vely = 5;
 		short velz = 5;
 		loc.setY(loc.getY()+5);
 		loc.setZ(loc.getZ()+5);
-		NetworkUtil.sendGlobalPacket(gen.getEntityVelocityPacket(new Vector(velx, vely, velz)), getLocation().getWorld());
+		NetworkUtil.sendGlobalPacket(gen.getEntityVelocityPacket(new Vector(velx, vely, velz)), getLocation().getWorld());*/
 	}
 	
 	/**
@@ -424,12 +428,12 @@ public class HerdEntity {
 		
 	}
 	public void update() {
-		if(nextDest!=null) {
-			path.remove(0);
+		if(nextDest!=null && path.size()>0) {
+			path.remove(path.size()-1);
 		}
 		
 		if(path.size()>0)
-			nextDest = path.get(0);
+			nextDest = path.get(path.size()-1);
 		
 	}
 	public void initHealth() {
@@ -481,20 +485,9 @@ public class HerdEntity {
 		
 	}
 	public void moveToNode(Node node) {
-		Node curnode = new Node(getLocation().getBlock());
-		setLocation(node.getNodeBlock().getLocation());
-		if(PathfindingUtil.distanceBetweenNodes(node.getNodeBlock().getLocation(), curnode) <= 4) {
-			int distx = (int) Math.abs(node.getNodeBlock().getLocation().getX()-curnode.getNodeBlock().getLocation().getX());
-			int disty = (int) Math.abs(node.getNodeBlock().getLocation().getY()-curnode.getNodeBlock().getLocation().getY());
-			int distz = (int) Math.abs(node.getNodeBlock().getLocation().getZ()-curnode.getNodeBlock().getLocation().getZ());
-			Movement move = getMovement();
-			move.x=distx;
-			move.y=disty;
-			move.z=distz;
-			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(move), getWorld());
-		} else {
-			NetworkUtil.sendGlobalPacket(gen.getEntityTeleportPacket(), getWorld());
-		}
+		Location from = getLocation();
+		Location to = node.getNodeBlock().getLocation();
+		movement.update(to);
 	}
 	public Player getLeader() {
 		return leader;

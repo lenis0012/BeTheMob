@@ -25,9 +25,9 @@ public class PathfindingUtil {
 		Location loc = node.getNodeBlock().getLocation();
 		HashMap<String, Node> nodes = new HashMap<String, Node>();
 		Block below = loc.getWorld().getBlockAt(loc.getBlockX(),
-				loc.getBlockY() + 1, loc.getBlockZ());
-		Block above = loc.getWorld().getBlockAt(loc.getBlockX(),
 				loc.getBlockY() - 1, loc.getBlockZ());
+		Block above = loc.getWorld().getBlockAt(loc.getBlockX(),
+				loc.getBlockY() + 1, loc.getBlockZ());
 		Block left = loc.getWorld().getBlockAt(loc.getBlockX() + 1,
 				loc.getBlockY(), loc.getBlockZ());
 		Block right = loc.getWorld().getBlockAt(loc.getBlockX() - 1,
@@ -73,8 +73,8 @@ public class PathfindingUtil {
 			Location destination) {
 		Node leastDist = Iterables.get(collection, 0);
 		for (Node node : collection) {
-			if (!node.isObstructed()
-					&& distanceBetweenNodes(destination, node) < distanceBetweenNodes(
+			if (/*!node.isObstructed()
+					&&*/ distanceBetweenNodes(destination, node) < distanceBetweenNodes(
 							destination, leastDist)) {
 				leastDist = node;
 			}
@@ -92,20 +92,22 @@ public class PathfindingUtil {
 	 * @return Nodes - all the locations in the path
 	 */
 	public static ArrayList<Node> getPathToLocation(Node startnode, Node endnode) {
-		int maxits = 50;
-		int its = 0;
-		//max iterations before giving up
 		ArrayList<Node> pathlocs = new ArrayList<Node>();
 		Node curnode = endnode;
-		while(!curnode.equals(startnode)) {
-			pathlocs.add(curnode);
+		startnode.setNodeBlock(getBlockGravity(startnode.getNodeBlock()));
+		while(!compareLocations(curnode.getNodeBlock().getLocation(), startnode.getNodeBlock().getLocation())) {
 			curnode = getLowestDistanceNode(getNeighboringNodes(curnode).values(), startnode.getNodeBlock().getLocation());
-			curnode.setNodeBlock(getBlockGravity(curnode.getNodeBlock()));
-			System.out.println(curnode.getNodeBlock().getX()+ ", " + curnode.getNodeBlock().getY()+", "+curnode.getNodeBlock().getZ());
-			its++;
-			if(its>=maxits)
-				break;
+			//curnode.setNodeBlock(getBlockGravity(curnode.getNodeBlock()));
+			pathlocs.add(curnode);
+			//curnode.getNodeBlock().setType(Material.COBBLESTONE);
+//			System.out.println(curnode.getNodeBlock().getX()+ ", " + 
+//					curnode.getNodeBlock().getY()+", "+curnode.getNodeBlock().getZ());
+//			System.out.println(startnode.getNodeBlock().getX()+ ", " + 
+//					startnode.getNodeBlock().getY()+", "+startnode.getNodeBlock().getZ());
+//			System.out.println("end");
+//			debugging code
 		}
+		//startnode.getNodeBlock().setType(Material.REDSTONE_BLOCK);
 		return pathlocs;
 		
 	}
@@ -132,5 +134,14 @@ public class PathfindingUtil {
 	}
 	public static Block getBlockGravity(Block block) {
 		return block.getWorld().getHighestBlockAt(block.getLocation());
+	}
+	public static boolean compareLocations(Location loc1, Location loc2) {
+		double x1 = loc1.getX();
+		double x2 = loc2.getX();
+		double y1 = loc1.getY();
+		double y2 = loc2.getY();
+		double z1 = loc1.getZ();
+		double z2 = loc2.getZ();
+		return x1==x2 && y1 == y2 && z1 == z2;
 	}
 }

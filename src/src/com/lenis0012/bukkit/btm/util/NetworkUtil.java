@@ -2,10 +2,13 @@ package src.com.lenis0012.bukkit.btm.util;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import src.com.lenis0012.bukkit.btm.BeTheMob;
 import src.com.lenis0012.bukkit.btm.nms.wrappers.Packet;
 
 
@@ -36,8 +39,10 @@ public class NetworkUtil {
 	 * @param world			World to recive packet
 	 */
 	public static void sendGlobalPacket(Packet packet, World world) {
-		for(int i=0;i<world.getPlayers().size();i++) {
-			Player player = world.getPlayers().get(i);
+		Player[] allplayers = BeTheMob.instance.getServer().getOnlinePlayers();
+		//fix concurrentmodificationexception
+		for(Player player : allplayers) {
+		
 			sendPacket(packet, player);
 		}
 	}
@@ -50,8 +55,9 @@ public class NetworkUtil {
 	 * @param ignore		Player to be ignored
 	 */
 	public static void sendGlobalPacket(Packet packet, World world, Player ignore) {
-		for(int i=0;i<world.getPlayers().size();i++) {
-			Player player = world.getPlayers().get(i);
+		Player[] allplayers = BeTheMob.instance.getServer().getOnlinePlayers();
+		//fix concurrentmodificationexception
+		for(Player player : allplayers) {
 			if(!player.getName().equals(ignore.getName()))
 				sendPacket(packet, player);
 		}
