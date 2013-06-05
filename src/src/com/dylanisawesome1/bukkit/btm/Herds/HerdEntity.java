@@ -359,6 +359,7 @@ public class HerdEntity {
     
     private World getWorld() {
 		return getLocation().getWorld();
+		
 	}
 	/**
      * Gets the correct damaged sound
@@ -410,16 +411,26 @@ public class HerdEntity {
     	}
     	
     	return null;
+    	
     }
 	public boolean isHumanoid() {
 		return isPlayer() || getType() == EntityType.SKELETON
 				|| getType() == EntityType.ZOMBIE
 				|| getType() == EntityType.PIG_ZOMBIE;
+		
 	}
 	public boolean canHoldBlocks() {
 		return isHumanoid() || getType() == EntityType.ENDERMAN;
+		
 	}
 	public void update() {
+		if(nextDest!=null) {
+			path.remove(0);
+		}
+		
+		if(path.size()>0)
+			nextDest = path.get(0);
+		
 	}
 	public void initHealth() {
     	if(type == EntityType.BAT){
@@ -476,7 +487,10 @@ public class HerdEntity {
 			int distx = (int) Math.abs(node.getNodeBlock().getLocation().getX()-curnode.getNodeBlock().getLocation().getX());
 			int disty = (int) Math.abs(node.getNodeBlock().getLocation().getY()-curnode.getNodeBlock().getLocation().getY());
 			int distz = (int) Math.abs(node.getNodeBlock().getLocation().getZ()-curnode.getNodeBlock().getLocation().getZ());
-			Movement move = new Movement(new Location(curnode.getNodeBlock().getWorld(), distx, disty, distz));
+			Movement move = getMovement();
+			move.x=distx;
+			move.y=disty;
+			move.z=distz;
 			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(move), getWorld());
 		} else {
 			NetworkUtil.sendGlobalPacket(gen.getEntityTeleportPacket(), getWorld());

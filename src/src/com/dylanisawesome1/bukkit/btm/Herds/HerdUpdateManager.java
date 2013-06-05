@@ -18,7 +18,7 @@ public class HerdUpdateManager {
 			for (HerdEntity hentity : herd.getHerdMembers()) {
 				hentity.update();
 				if(System.currentTimeMillis()-timeLastMoved>=moveTimeout) {
-					hentity.moveToNode(new Node(hentity.getLeader().getLocation().getBlock()));
+					hentity.moveToNode(hentity.nextDest);
 					return true;
 				} else {
 					return false;

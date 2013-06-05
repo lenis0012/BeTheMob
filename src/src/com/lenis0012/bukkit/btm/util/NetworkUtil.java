@@ -50,7 +50,8 @@ public class NetworkUtil {
 	 * @param ignore		Player to be ignored
 	 */
 	public static void sendGlobalPacket(Packet packet, World world, Player ignore) {
-		for(Player player : world.getPlayers()) {
+		for(int i=0;i<world.getPlayers().size();i++) {
+			Player player = world.getPlayers().get(i);
 			if(!player.getName().equals(ignore.getName()))
 				sendPacket(packet, player);
 		}

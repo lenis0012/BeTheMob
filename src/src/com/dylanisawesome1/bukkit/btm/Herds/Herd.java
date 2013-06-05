@@ -7,7 +7,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
+import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
 import src.com.lenis0012.bukkit.btm.BeTheMob;
+import src.com.lenis0012.bukkit.btm.util.PathfindingUtil;
 
 
 public class Herd {
@@ -64,7 +66,9 @@ public class Herd {
 		for(int i=0;i<membercount;i++) {
 			Random rand = new Random();
 			Location entityloc = new Location(leader.getWorld(), leader.getLocation().getX()+rand.nextInt(radius)-(radius/2), leader.getLocation().getY(), leader.getLocation().getZ()+rand.nextInt(radius)-(radius/2));
-			addHerdMember(new HerdEntity(BeTheMob.instance.nextID--, entityloc, 0, BeTheMob.instance.disguises.get(leader.getName()).getDisguiseType(), leader));
+			HerdEntity hentity = new HerdEntity(BeTheMob.instance.nextID--, entityloc, 0, BeTheMob.instance.disguises.get(leader.getName()).getDisguiseType(), leader);
+			hentity.setPath(PathfindingUtil.getPathToLocation(new Node(hentity.getLocation().getBlock()), new Node(leader.getLocation().getBlock())));
+			addHerdMember(hentity);
 			
 		}
 	}
