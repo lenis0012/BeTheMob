@@ -120,7 +120,7 @@ public class PacketGenerator implements IPacketGenerator {
 		} else {
 			yaw = getByteFromDegree(ent.getLocation().getYaw());
 			pitch = getByteFromDegree(ent.getLocation().getPitch());
-			if (ent.getDisguiseType() == EntityType.ENDER_DRAGON) {
+			if (ent.getType() == EntityType.ENDER_DRAGON) {
 				yaw = (byte) (yaw - 128);
 			}
 			if (dis.getDisguiseType() == EntityType.CHICKEN) {
@@ -157,10 +157,10 @@ public class PacketGenerator implements IPacketGenerator {
 				pitch = (byte) (pitch * -1);
 			}
 		} else {
-			if (ent.getDisguiseType() == EntityType.ENDER_DRAGON) {
+			if (ent.getType() == EntityType.ENDER_DRAGON) {
 				yaw = (byte) (yaw - 128);
 			}
-			if (ent.getDisguiseType() == EntityType.CHICKEN) {
+			if (ent.getType() == EntityType.CHICKEN) {
 				pitch = (byte) (pitch * -1);
 			}
 		}
@@ -219,10 +219,10 @@ public class PacketGenerator implements IPacketGenerator {
 			}
 			packet.write("a", dis.getEntityId());
 		} else {
-			if (ent.getDisguiseType() == EntityType.ENDER_DRAGON) {
+			if (ent.getType() == EntityType.ENDER_DRAGON) {
 				yaw = (byte) (yaw - 128);
 			}
-			if (ent.getDisguiseType() == EntityType.CHICKEN) {
+			if (ent.getType() == EntityType.CHICKEN) {
 				pitch = (byte) (pitch * -1);
 			}
 			packet.write("a", ent.getEntityId());
@@ -284,7 +284,7 @@ public class PacketGenerator implements IPacketGenerator {
 			type = dis.getDisguiseType();
 		} else {
 			loc = ent.getLocation();
-			type = ent.getDisguiseType();
+			type = ent.getType();
 		}
 		int x = MathUtil.floor(loc.getX() * 32.0D);
 		int y = MathUtil.floor(loc.getY() * 32.0D);

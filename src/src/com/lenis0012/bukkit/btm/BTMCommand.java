@@ -56,7 +56,6 @@ public class BTMCommand implements CommandExecutor {
 								Herd herd = new Herd(dis.getDisguiseType(), player);
 								herd.populateHerd(5, 20);
 								herd.spawnHerdMembers();
-								HerdUtil.pathFindHerdMembers(herd);
 								BeTheMob.instance.herds.add(herd);
 							}
 						} else

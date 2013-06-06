@@ -1,5 +1,6 @@
 package src.com.lenis0012.bukkit.btm.util;
 
+import java.awt.List;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,6 +8,7 @@ import java.util.HashMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 
 import com.google.common.collect.Iterables;
 
@@ -14,16 +16,16 @@ import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
 
 public class PathfindingUtil {
 	/**
-	 * Get all the neigboring nodes of the block
+	 * Get all the neighboring nodes of the block
 	 * 
 	 * @param node
 	 *            - The node of which to get the neighbors
 	 * @return the neighbors, "below", "above", "left", "right", "front", and
 	 *         "behind"
 	 */
-	public static HashMap<String, Node> getNeighboringNodes(Node node) {
+	public static ArrayList<Node> getNeighboringNodes(Node node) {
 		Location loc = node.getNodeBlock().getLocation();
-		HashMap<String, Node> nodes = new HashMap<String, Node>();
+		ArrayList<Node> nodes = new ArrayList<Node>();
 		Block below = loc.getWorld().getBlockAt(loc.getBlockX(),
 				loc.getBlockY() - 1, loc.getBlockZ());
 		Block above = loc.getWorld().getBlockAt(loc.getBlockX(),
@@ -36,12 +38,12 @@ public class PathfindingUtil {
 				loc.getBlockY(), loc.getBlockZ() + 1);
 		Block behind = loc.getWorld().getBlockAt(loc.getBlockX(),
 				loc.getBlockY(), loc.getBlockZ() - 1);
-		nodes.put("below", new Node(below));
-		nodes.put("above", new Node(above));
-		nodes.put("left", new Node(left));
-		nodes.put("right", new Node(right));
-		nodes.put("front", new Node(front));
-		nodes.put("behind", new Node(behind));
+		nodes.add(new Node(below, "below"));
+		nodes.add(new Node(above, "above"));
+		nodes.add(new Node(left, "left"));
+		nodes.add(new Node(right, "right"));
+		nodes.add(new Node(front, "front"));
+		nodes.add(new Node(behind, "behind"));
 		return nodes;
 
 	}
@@ -57,7 +59,6 @@ public class PathfindingUtil {
 	 */
 	public static double distanceBetweenNodes(Location loc1, Node node) {
 		return loc1.distance(node.getNodeBlock().getLocation());
-
 	}
 
 	/**
@@ -67,14 +68,16 @@ public class PathfindingUtil {
 	 *            - the collection of nodes to iterate through.
 	 * @param destination
 	 *            - The final destination
+	 * @param entitytype
+	 * 			  - The type of the entity, for finding the height in blocks
 	 * @return Node - the node that is the closest out of the list
 	 */
-	public static Node getLowestDistanceNode(Collection<Node> collection,
-			Location destination) {
-		Node leastDist = Iterables.get(collection, 0);
+	public static Node getLowestDistanceNode(ArrayList<Node> collection,
+			Location destination, EntityType entitytype) {
+		Node leastDist = collection.get(0);
 		for (Node node : collection) {
-			if (/*!node.isObstructed()
-					&&*/ distanceBetweenNodes(destination, node) < distanceBetweenNodes(
+			if (!isNodeObstructed(node, HerdUtil.getHeightInBlocks(entitytype), true)
+					&& distanceBetweenNodes(destination, node) < distanceBetweenNodes(
 							destination, leastDist)) {
 				leastDist = node;
 			}
@@ -89,27 +92,25 @@ public class PathfindingUtil {
 	 *            - the node to start on
 	 * @param endnode
 	 *            - the destination node
-	 * @return Nodes - all the locations in the path
+	 * @return node - Next destination node
 	 */
-	public static ArrayList<Node> getPathToLocation(Node startnode, Node endnode) {
+	public static ArrayList<Node> getPathToLocation(Node startnode, Node endnode, EntityType type) {
 		ArrayList<Node> pathlocs = new ArrayList<Node>();
 		Node curnode = endnode;
+		int its=0;
+		int maxits=5000;
 		startnode.setNodeBlock(getBlockGravity(startnode.getNodeBlock()));
 		while(!compareLocations(curnode.getNodeBlock().getLocation(), startnode.getNodeBlock().getLocation())) {
-			curnode = getLowestDistanceNode(getNeighboringNodes(curnode).values(), startnode.getNodeBlock().getLocation());
-			//curnode.setNodeBlock(getBlockGravity(curnode.getNodeBlock()));
+			
+			curnode = getLowestDistanceNode(getNeighboringNodes(curnode), startnode.getNodeBlock().getLocation(), type);
 			pathlocs.add(curnode);
-			//curnode.getNodeBlock().setType(Material.COBBLESTONE);
-//			System.out.println(curnode.getNodeBlock().getX()+ ", " + 
-//					curnode.getNodeBlock().getY()+", "+curnode.getNodeBlock().getZ());
-//			System.out.println(startnode.getNodeBlock().getX()+ ", " + 
-//					startnode.getNodeBlock().getY()+", "+startnode.getNodeBlock().getZ());
-//			System.out.println("end");
-//			debugging code
+			if(its>=maxits) {
+				break;
+			}
+			its++;
 		}
-		//startnode.getNodeBlock().setType(Material.REDSTONE_BLOCK);
 		return pathlocs;
-		
+
 	}
 
 	/**
@@ -117,20 +118,25 @@ public class PathfindingUtil {
 	 * 
 	 * @param node
 	 *            - The node which to check
+	 * @param height
+	 * 			  - The height of the mob
+	 * @param checkforoverhang
+	 * 			  - Check for overhangs above this?
 	 * @return isObstructed - Is the node obstructed?
 	 */
-	public static boolean isNodeObstructed(Node node) {
-		Node nodeBelow = getNeighboringNodes(node).get("below");
-		HashMap<String, Node> nodesaround = getNeighboringNodes(nodeBelow);
-		if (node.getNodeBlock().getType() != Material.AIR) {
-			for (String s : nodesaround.keySet()) {
-				if (nodesaround.get(s).getNodeBlock().getType() == Material.AIR) {
+	public static boolean isNodeObstructed(Node node, int height, boolean checkforoverhang) {
+		if(node.getNodeBlock().getType().isSolid() /*&& node.getNodeBlock().getType() != Material.SNOW*/) {
+			return true;
+		}
+		if(checkforoverhang) {
+			for(int i=0;i<height-1;i++) {
+				Block tmpblock = node.getNodeBlock().getLocation().add(0, i, 0).getBlock();
+				if(tmpblock.getType().isSolid()) {
 					return true;
 				}
 			}
 		}
 		return false;
-
 	}
 	public static Block getBlockGravity(Block block) {
 		return block.getWorld().getHighestBlockAt(block.getLocation());

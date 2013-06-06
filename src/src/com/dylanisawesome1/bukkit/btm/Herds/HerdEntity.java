@@ -11,8 +11,6 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.BlockLoader;
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
 import src.com.lenis0012.bukkit.btm.BeTheMob;
@@ -22,7 +20,6 @@ import src.com.lenis0012.bukkit.btm.nms.PacketGenerator;
 import src.com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
 import src.com.lenis0012.bukkit.btm.util.MetaDataUtil;
 import src.com.lenis0012.bukkit.btm.util.NetworkUtil;
-import src.com.lenis0012.bukkit.btm.util.PathfindingUtil;
 
 
 public class HerdEntity {
@@ -163,7 +160,7 @@ public class HerdEntity {
 	}
 	
 	/**
-	 * 'Ignites' the disguise
+	 * 'Ignites' the entity
 	 */
 	public void ignite(){
 		dw.set(0, Byte.valueOf((byte) 1));
@@ -180,9 +177,9 @@ public class HerdEntity {
 	
 	
 	/**
-	 * Despawn the disguise in a custom world
+	 * Despawn the entity in a custom world
 	 * 
-	 * @param world	World to despawn disguise
+	 * @param world	World to despawn entity
 	 */
 	public void despawn(World world) {
 		NetworkUtil.sendGlobalPacket(gen.getDestroyEntityPacket(), world);
@@ -190,9 +187,9 @@ public class HerdEntity {
 	}
 	
 	/**
-	 * Unload the disguise for a player
+	 * Unload the entity for a player
 	 * 
-	 * @param player Player to unload disguise for
+	 * @param player Player to unload entity for
 	 */
 	public void unLoadFor(Player player) {
 		NetworkUtil.sendPacket(gen.getDestroyEntityPacket(), player);
@@ -328,18 +325,10 @@ public class HerdEntity {
 	public void refreshMovement() {
 		this.movement = new Movement(loc);
 	}
-	
-	/**
-	 * Get the type of the entity
-	 */
-    public EntityType getDisguiseType() {
-    	return type;
-    }
-    
     /**
      * Get the packet generator
      * 
-     * @return Packet geneator
+     * @return Packet generator
      */
     public IPacketGenerator getPacketGenerator() {
     	return this.gen;

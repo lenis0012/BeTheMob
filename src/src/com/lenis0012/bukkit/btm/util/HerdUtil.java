@@ -2,6 +2,7 @@ package src.com.lenis0012.bukkit.btm.util;
 
 import java.util.ArrayList;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import src.com.dylanisawesome1.bukkit.btm.Herds.Herd;
@@ -23,11 +24,6 @@ public class HerdUtil {
 			}
 		}
 		return entity;
-	}
-	public static void pathFindHerdMembers(Herd herd) {
-		for(HerdEntity hent : herd.getHerdMembers()) {
-			PathfindingUtil.getPathToLocation(new Node(hent.getLocation().getBlock()), new Node(herd.getLeader().getLocation().getBlock()));
-		}
 	}
 	public static int getDamageDealt(ItemStack item) {
 		switch(item.getType()) {
@@ -83,6 +79,43 @@ public class HerdUtil {
 		default:
 			return 1;
 			
+		}
+	}
+	public static int getHeightInBlocks(EntityType type) {
+		switch(type) {
+			case PLAYER:
+				return 2;
+			case ENDERMAN:
+				return 3;
+			case ZOMBIE:
+				return 2;
+			case SKELETON:
+				return 2;
+			case PIG_ZOMBIE:
+				return 2;
+			case BLAZE:
+				return 2;
+			case CREEPER:
+				return 2;
+			case GHAST:
+				return 4;
+			case IRON_GOLEM:
+				return 3;
+			case VILLAGER:
+				return 2;
+			case COW:
+				return 2;
+			case SHEEP:
+				return 2;
+			case WITCH:
+				return 2;
+			case WITHER:
+				return 3;
+			case GIANT:
+				return 12;
+			default:
+				return 1;
+				
 		}
 	}
 }

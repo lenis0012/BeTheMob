@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.bukkit.Location;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 
 import src.com.lenis0012.bukkit.btm.util.PathfindingUtil;
 
@@ -24,16 +25,6 @@ public class BlockLoader {
 		for(int x=entityLocation.getBlockX()-maxdistance/2;x<entityLocation.getBlockX()+maxdistance/2;x++) {
 			for(int z=entityLocation.getBlockZ()-maxdistance/2;z<entityLocation.getBlockZ()+maxdistance/2;z++) {
 				allNodes.add(new Node(entityLocation.getWorld().getHighestBlockAt(x, z)));
-			}
-		}
-		getAvailableNodes();
-	}
-	public void getAvailableNodes() {
-		for(Node node : allNodes) {
-			if(!PathfindingUtil.isNodeObstructed(node)) {
-				availableNodes.add(node);
-			} else {
-				node.setObstructed(true);
 			}
 		}
 	}
