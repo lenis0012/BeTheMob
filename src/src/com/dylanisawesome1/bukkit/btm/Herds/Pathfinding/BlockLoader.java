@@ -3,10 +3,6 @@ package src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding;
 import java.util.ArrayList;
 
 import org.bukkit.Location;
-import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
-
-import src.com.lenis0012.bukkit.btm.util.PathfindingUtil;
 
 public class BlockLoader {
 	private Location entityLocation;

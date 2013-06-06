@@ -1,16 +1,9 @@
 package src.com.lenis0012.bukkit.btm.util;
 
-import java.awt.List;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
-
-import com.google.common.collect.Iterables;
 
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
 
@@ -20,11 +13,11 @@ public class PathfindingUtil {
 	 * 
 	 * @param node
 	 *            - The node of which to get the neighbors
-	 * @return the neighbors, "below", "above", "left", "right", "front", and
-	 *         "behind"
+	 * @return the neighbors, "below", "above", "left", "right", "front", "behind", "leftfront", "rightfront", "leftbehind", and
+	 *         "rightbehind"
 	 */
 	public static ArrayList<Node> getNeighboringNodes(Node node) {
-		Location loc = node.getNodeBlock().getLocation();
+		Location loc = node.getLocation();
 		ArrayList<Node> nodes = new ArrayList<Node>();
 		Block below = loc.getWorld().getBlockAt(loc.getBlockX(),
 				loc.getBlockY() - 1, loc.getBlockZ());
@@ -32,13 +25,25 @@ public class PathfindingUtil {
 				loc.getBlockY() + 1, loc.getBlockZ());
 		Block left = loc.getWorld().getBlockAt(loc.getBlockX() + 1,
 				loc.getBlockY(), loc.getBlockZ());
+		Block leftforward = loc.getWorld().getBlockAt(loc.getBlockX() + 1,
+				loc.getBlockY(), loc.getBlockZ()+1);
+		Block leftbackwards = loc.getWorld().getBlockAt(loc.getBlockX() + 1,
+				loc.getBlockY(), loc.getBlockZ()-1);
 		Block right = loc.getWorld().getBlockAt(loc.getBlockX() - 1,
 				loc.getBlockY(), loc.getBlockZ());
+		Block rightforwards = loc.getWorld().getBlockAt(loc.getBlockX() - 1,
+				loc.getBlockY(), loc.getBlockZ()+1);
+		Block rightbackwards = loc.getWorld().getBlockAt(loc.getBlockX() - 1,
+				loc.getBlockY(), loc.getBlockZ()-1);
 		Block front = loc.getWorld().getBlockAt(loc.getBlockX(),
 				loc.getBlockY(), loc.getBlockZ() + 1);
 		Block behind = loc.getWorld().getBlockAt(loc.getBlockX(),
 				loc.getBlockY(), loc.getBlockZ() - 1);
 		nodes.add(new Node(below, "below"));
+		nodes.add(new Node(leftforward, "leftfront"));
+		nodes.add(new Node(leftbackwards, "leftbehind"));
+		nodes.add(new Node(rightforwards, "rightfront"));
+		nodes.add(new Node(rightbackwards, "rightbehind"));
 		nodes.add(new Node(above, "above"));
 		nodes.add(new Node(left, "left"));
 		nodes.add(new Node(right, "right"));
@@ -58,7 +63,7 @@ public class PathfindingUtil {
 	 * @return distance - the distance between the nodes
 	 */
 	public static double distanceBetweenNodes(Location loc1, Node node) {
-		return loc1.distance(node.getNodeBlock().getLocation());
+		return loc1.distance(node.getLocation());
 	}
 
 	/**
@@ -100,9 +105,9 @@ public class PathfindingUtil {
 		int its=0;
 		int maxits=5000;
 		startnode.setNodeBlock(getBlockGravity(startnode.getNodeBlock()));
-		while(!compareLocations(curnode.getNodeBlock().getLocation(), startnode.getNodeBlock().getLocation())) {
+		while(!compareLocations(curnode.getLocation(), startnode.getLocation())) {
 			
-			curnode = getLowestDistanceNode(getNeighboringNodes(curnode), startnode.getNodeBlock().getLocation(), type);
+			curnode = getLowestDistanceNode(getNeighboringNodes(curnode), startnode.getLocation(), type);
 			pathlocs.add(curnode);
 			if(its>=maxits) {
 				break;
@@ -130,7 +135,7 @@ public class PathfindingUtil {
 		}
 		if(checkforoverhang) {
 			for(int i=0;i<height-1;i++) {
-				Block tmpblock = node.getNodeBlock().getLocation().add(0, i, 0).getBlock();
+				Block tmpblock = node.getLocation().add(0, i, 0).getBlock();
 				if(tmpblock.getType().isSolid()) {
 					return true;
 				}

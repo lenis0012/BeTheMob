@@ -473,11 +473,10 @@ public class HerdEntity {
     	}
 		
 	}
-	public void moveToNode(Node node) {
-		Location from = getLocation();
-		Location to = node.getNodeBlock().getLocation();
-		movement.update(to);
-	}
+//	public void moveToNode(Node node) {
+//		Location to = node.getLocation();
+//		movement.update(to);
+//	}
 	public Player getLeader() {
 		return leader;
 	}

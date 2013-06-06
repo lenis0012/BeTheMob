@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
 import src.com.lenis0012.bukkit.btm.BeTheMob;
-import src.com.lenis0012.bukkit.btm.util.PathfindingUtil;
 
 
 public class Herd {

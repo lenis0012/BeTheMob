@@ -30,7 +30,8 @@ public class HerdUpdateManager {
 						hentity.timeLastMoved = System.currentTimeMillis();
 						if(hentity.nextDest!=null) {
 							hentity.setPath(PathfindingUtil.getPathToLocation(new Node(hentity.getLocation().getBlock()), new Node(hentity.getLeader().getLocation().getBlock()), hentity.getType()));
-							hentity.move(hentity.getLocation(), hentity.nextDest.getNodeBlock().getLocation().add(0.5D, 0.0D, 0.5D), true);
+							hentity.move(hentity.getLocation(), hentity.nextDest.getLocation().add(0.5D, 0.0D, 0.5D), true);
+							
 						}
 					} 
 				}
