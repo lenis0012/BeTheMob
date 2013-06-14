@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
 import src.com.dylanisawesome1.bukkit.btm.Herds.Herd;
+import src.com.dylanisawesome1.bukkit.btm.Herds.HerdEntity;
 import src.com.lenis0012.bukkit.btm.api.Api;
 import src.com.lenis0012.bukkit.btm.api.Disguise;
 import src.com.lenis0012.bukkit.btm.events.PlayerDisguiseEvent;
@@ -56,6 +57,7 @@ public class BTMCommand implements CommandExecutor {
 								inf(player, "Succesfully diguised as a "+args[1]);
 								Herd herd = new Herd(dis.getDisguiseType(), player);
 								herd.populateHerd(new Random().nextInt(7)+2, 20);
+								//herd.populateHerd(20, 20);
 								herd.spawnHerdMembers();
 								BeTheMob.instance.herds.add(herd);
 							}
@@ -139,8 +141,16 @@ public class BTMCommand implements CommandExecutor {
 				player.sendMessage(" \n" + ChatColor.GOLD + "Vehicle types: ");
 				for(String message : this.getMessages(list))
 					player.sendMessage(message);
-			} else
+			} else if(args[0].equalsIgnoreCase("debug")) {
+				for(Herd herd : BeTheMob.instance.herds) {
+					for(HerdEntity hentity : herd.getHerdMembers()) {
+						System.out.println(hentity.getEntityId()+" Is at " +hentity.getLocation());
+					}
+				}
+			}
+			else
 				err(player, "Invalid argument, try mob, player, vehicle, list or off");
+			
 		} else
 			err(player, "Usage: "+cmd.getUsage());
 		

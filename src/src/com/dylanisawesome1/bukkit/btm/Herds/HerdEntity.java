@@ -244,7 +244,7 @@ public class HerdEntity {
 			movement.update(to);
 			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), to.getWorld());
 			this.setLocation(to);
-			System.out.println("move:"+ from + " to " + to);
+//			System.out.println("move:"+ from + " to " + to);
 		} else
 			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), to.getWorld());
 		

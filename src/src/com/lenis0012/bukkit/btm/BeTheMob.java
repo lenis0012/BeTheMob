@@ -50,7 +50,7 @@ public class BeTheMob extends JavaPlugin {
 		instance = this;
 		PluginManager pm = this.getServer().getPluginManager();
 		String version = DynamicUtil.MC_VERSION;
-		Bukkit.getScheduler().runTaskTimer(this, HerdUpdateManager.runHerdUpdate(herds, 40), 0, 1);
+		Bukkit.getScheduler().runTaskTimer(this, HerdUpdateManager.runHerdUpdate(herds, 400), 0, 1);
 		if(!this.isCompatible(version)) {
 			version = version.isEmpty() ? "unknown" : version.substring(1);
 			log.warning("[BeTheMob] BeTheMob has not been tested with this version of bukkit yet.");

@@ -88,10 +88,7 @@ public class PathfindingUtil {
 			if (!isNodeObstructed(node, HerdUtil.getHeightInBlocks(entitytype), true, path)) {
 				if (leastDist == null) leastDist = node; 
 				else if (distanceBetweenNodes(destination, node) < distanceBetweenNodes(
-							destination, leastDist)) 
-				{
-				leastDist = node;
-				}
+							destination, leastDist)) leastDist = node;
 			}
 		}
 		return leastDist;
@@ -110,7 +107,7 @@ public class PathfindingUtil {
 		ArrayList<Node> pathlocs = new ArrayList<Node>();
 		Node curnode = endnode;
 		int its=0;
-		int maxits=50;
+		int maxits=1000;
 		//startnode.setNodeBlock(getBlockGravity(startnode.getNodeBlock()));
 		while(distanceBetweenNodes(curnode.getLocation(), startnode)>2) {
 			
@@ -119,7 +116,7 @@ public class PathfindingUtil {
 				return pathlocs;
 			pathlocs.add(curnode);
 			if(its>=maxits) {
-				System.out.println("MAXITS");
+//				System.out.println("MAXITS");
 				return pathlocs;
 			}
 			its++;

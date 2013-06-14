@@ -35,15 +35,20 @@ public class HerdUpdateManager {
 								new Node(hentity.getLeader().getLocation().getBlock()), 
 								hentity.getType()));
 						
-						System.out.println("PATH: "+hentity.getEntityId());
-						for(Node node : hentity.getPath()) {
-							System.out.println(node.getLocation());
-						}
+//						System.out.println("PATH: "+hentity.getEntityId());
+//						for(Node node : hentity.getPath()) {
+//							System.out.println(node.getLocation());
+//						}
 						
 						int sz = hentity.getPath().size();	
 						if (sz>=2){
 							
-							hentity.move(hentity.getLocation(), hentity.getPath().get(sz-2).getLocation().getBlock().getLocation(), true);
+							if (sz>40) System.out.println("MAX" + hentity.getEntityId() + "loc " + hentity.getLocation());
+							
+							//hentity.move(hentity.getLocation(), hentity.getPath().get(sz-2).getLocation(),
+									//.getBlock().getLocation(), 
+							//		true);
+							hentity.teleport(hentity.getPath().get(sz-2).getLocation().getBlock().getLocation());
 						}							
 						
 					} 
