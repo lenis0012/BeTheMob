@@ -10,6 +10,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.BlockLoader;
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
@@ -20,6 +21,7 @@ import src.com.lenis0012.bukkit.btm.nms.PacketGenerator;
 import src.com.lenis0012.bukkit.btm.nms.wrappers.DataWatcher;
 import src.com.lenis0012.bukkit.btm.util.MetaDataUtil;
 import src.com.lenis0012.bukkit.btm.util.NetworkUtil;
+import src.com.lenis0012.bukkit.btm.util.PathfindingUtil;
 
 
 public class HerdEntity {
@@ -32,6 +34,7 @@ public class HerdEntity {
 	private boolean spawned = false;
 	private Movement movement;
 	private DataWatcher dw;
+	private LivingEntity entityToAttack;
 	BlockLoader loader;
 	private List<String> extras = new ArrayList<String>();
 	private ArrayList<Node> path = new ArrayList<Node>();
@@ -40,6 +43,7 @@ public class HerdEntity {
 	private Player leader;
 	public int health;
 	long timeLastMoved;
+	long timeLastUpdated;
 	public HerdEntity(int EntityID, Location loc, String name, int itemInHand, EntityType type, Player leader) {
 		this.setEntityID(EntityID);
 		this.setLocation(loc);
@@ -494,5 +498,21 @@ public class HerdEntity {
 	}
 	public void setPath(ArrayList<Node> path) {
 		this.path = path;
+	}
+	public LivingEntity getEntityToAttack() {
+		return entityToAttack;
+	}
+	public void setEntityToAttack(LivingEntity entityToAttack) {
+		this.entityToAttack = entityToAttack;
+	}
+	public void update(double delayBetweenUpdates) {
+		if(System.currentTimeMillis()-timeLastUpdated>=delayBetweenUpdates) {
+			if(entityToAttack!=null && !entityToAttack.isDead()) {
+				if(PathfindingUtil.distanceBetweenNodes(getLocation(), new Node(entityToAttack.getLocation().getBlock()))<3) {
+					entityToAttack.damage(1);
+				}
+			}
+			timeLastUpdated=System.currentTimeMillis();
+		}
 	}
 }

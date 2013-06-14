@@ -2,18 +2,24 @@ package src.com.lenis0012.bukkit.btm;
 
 import java.util.Set;
 
+import net.minecraft.server.v1_5_R3.DamageSource;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
@@ -26,6 +32,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import src.com.dylanisawesome1.bukkit.btm.Herds.Herd;
+import src.com.dylanisawesome1.bukkit.btm.Herds.HerdEntity;
 import src.com.lenis0012.bukkit.btm.api.Disguise;
 import src.com.lenis0012.bukkit.btm.events.HerdEntityInteractEvent;
 import src.com.lenis0012.bukkit.btm.nms.PlayerConnectionCallback;
@@ -313,7 +321,25 @@ public class BTMListener implements Listener {
 			
 		});
 	}
-	
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onEntityDamageByEntity(EntityDamageByEntityEvent evt) {
+		Entity entity = evt.getDamager();
+		if(evt.getEntity() instanceof Player) {
+			final Player player = (Player)evt.getEntity();
+			final String name = player.getName();
+			for(Herd herd : BeTheMob.instance.herds) {
+				if(herd.getLeader().getName() == name) {
+					for(HerdEntity hentity : herd.getHerdMembers()) {
+						if(entity instanceof LivingEntity) {
+							hentity.setEntityToAttack((LivingEntity)entity);
+						} else if(entity instanceof Projectile) {
+							hentity.setEntityToAttack(((Projectile)entity).getShooter());							
+						}
+					}
+				}
+			}
+		}
+	}
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onEntityDamage(final EntityDamageEvent event) {
 		if(event.isCancelled())
@@ -325,7 +351,6 @@ public class BTMListener implements Listener {
 		if(entity instanceof Player) {
 			final Player player = (Player)entity;
 			final String name = player.getName();
-			
 			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 				@Override

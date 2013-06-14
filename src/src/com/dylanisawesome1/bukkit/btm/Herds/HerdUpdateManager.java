@@ -24,11 +24,17 @@ public class HerdUpdateManager {
 			public void run() {
 		for (Herd herd : herds) {
 				for (HerdEntity hentity : herd.getHerdMembers()) {
+					hentity.update(20);
 					//System.out.println(hentity.getLocation().toString());
 					//hentity.update();
 					if(System.currentTimeMillis()-hentity.timeLastMoved>=moveTimeout) {
 						hentity.timeLastMoved = System.currentTimeMillis();
-						
+						if(hentity.getEntityToAttack() != null) {
+							hentity.setPath(PathfindingUtil.getPathToLocation(
+									new Node(hentity.getLocation().getBlock()), 
+									new Node(hentity.getEntityToAttack().getLocation().getBlock()), 
+									hentity.getType()));
+						}
 						
 						hentity.setPath(PathfindingUtil.getPathToLocation(
 								new Node(hentity.getLocation().getBlock()), 
@@ -44,11 +50,9 @@ public class HerdUpdateManager {
 						if (sz>=2){
 							
 							if (sz>40) System.out.println("MAX" + hentity.getEntityId() + "loc " + hentity.getLocation());
-							
-							//hentity.move(hentity.getLocation(), hentity.getPath().get(sz-2).getLocation(),
-									//.getBlock().getLocation(), 
-							//		true);
-							hentity.teleport(hentity.getPath().get(sz-2).getLocation());
+							hentity.move(hentity.getLocation(), hentity.getPath().get(sz-2).getLocation().getBlock().getLocation(), true);
+							hentity.setLocation(hentity.getPath().get(sz-2).getLocation().getBlock().getLocation());
+							hentity.refreshMovement();
 						}							
 						
 					} 
