@@ -48,7 +48,7 @@ public class HerdUpdateManager {
 							//hentity.move(hentity.getLocation(), hentity.getPath().get(sz-2).getLocation(),
 									//.getBlock().getLocation(), 
 							//		true);
-							hentity.teleport(hentity.getPath().get(sz-2).getLocation().getBlock().getLocation());
+							hentity.teleport(hentity.getPath().get(sz-2).getLocation());
 						}							
 						
 					} 
