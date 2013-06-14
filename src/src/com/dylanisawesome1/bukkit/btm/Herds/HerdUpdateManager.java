@@ -25,14 +25,27 @@ public class HerdUpdateManager {
 		for (Herd herd : herds) {
 				for (HerdEntity hentity : herd.getHerdMembers()) {
 					//System.out.println(hentity.getLocation().toString());
-					hentity.update();
+					//hentity.update();
 					if(System.currentTimeMillis()-hentity.timeLastMoved>=moveTimeout) {
 						hentity.timeLastMoved = System.currentTimeMillis();
-						if(hentity.nextDest!=null) {
-							hentity.setPath(PathfindingUtil.getPathToLocation(new Node(hentity.getLocation().getBlock()), new Node(hentity.getLeader().getLocation().getBlock()), hentity.getType()));
-							hentity.move(hentity.getLocation(), hentity.nextDest.getLocation().add(0.5D, 0.0D, 0.5D), true);
-							
+						
+						
+						hentity.setPath(PathfindingUtil.getPathToLocation(
+								new Node(hentity.getLocation().getBlock()), 
+								new Node(hentity.getLeader().getLocation().getBlock()), 
+								hentity.getType()));
+						
+						System.out.println("PATH: "+hentity.getEntityId());
+						for(Node node : hentity.getPath()) {
+							System.out.println(node.getLocation());
 						}
+						
+						int sz = hentity.getPath().size();	
+						if (sz>=2){
+							
+							hentity.move(hentity.getLocation(), hentity.getPath().get(sz-2).getLocation().getBlock().getLocation(), true);
+						}							
+						
 					} 
 				}
 			}

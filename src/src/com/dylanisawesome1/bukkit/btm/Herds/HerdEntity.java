@@ -35,7 +35,6 @@ public class HerdEntity {
 	BlockLoader loader;
 	private List<String> extras = new ArrayList<String>();
 	private ArrayList<Node> path = new ArrayList<Node>();
-	Node nextDest;
 	//Extras is currently unimplemented
 	private IPacketGenerator gen;
 	private Player leader;
@@ -120,10 +119,10 @@ public class HerdEntity {
 				NetworkUtil.sendPacket(gen.getNamedEntitySpawnPacket(), player);
 			} else{
 				NetworkUtil.sendPacket(gen.getMobSpawnPacket(), player);
+				
 			}
 		}
 	}
-	
 	/**
 	 * Spawn the entity for a world
 	 * 
@@ -135,9 +134,11 @@ public class HerdEntity {
 			dw.set(0, Byte.valueOf((byte) 0));
 			dw.set(12, Integer.valueOf((int) 0));
 			NetworkUtil.sendGlobalPacket(gen.getNamedEntitySpawnPacket(), world);
-		} else{
+		}
+		else
+		{
 			dw = MetaDataUtil.getDataWatcher(type, extras);
-			NetworkUtil.sendGlobalPacket(gen.getMobSpawnPacket(), world);
+			NetworkUtil.sendGlobalPacket(gen.getMobSpawnPacket(), world);	
 		}
 		this.spawned = true;
 	}
@@ -242,8 +243,11 @@ public class HerdEntity {
 		if(moved) {
 			movement.update(to);
 			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), to.getWorld());
+			this.setLocation(to);
+			System.out.println("move:"+ from + " to " + to);
 		} else
 			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), to.getWorld());
+		
 		NetworkUtil.sendGlobalPacket(gen.getEntityHeadRotatePacket(), to.getWorld());
 	}
 	
@@ -416,15 +420,17 @@ public class HerdEntity {
 		return isHumanoid() || getType() == EntityType.ENDERMAN;
 		
 	}
-	public void update() {
-		if(nextDest!=null && path.size()>0) {
-			path.remove(path.size()-1);
-		}
+//	public void update() {
+//		if(nextDest!=null && path.size()>0) {
+//			path.remove(path.size()-1);
+//			
+//		if(path.size()>0)
+//			nextDest = path.get(path.size()-1);
+//		}
+//		
+	
 		
-		if(path.size()>0)
-			nextDest = path.get(path.size()-1);
-		
-	}
+//	}
 	public void initHealth() {
     	if(type == EntityType.BAT){
     		health = 6;

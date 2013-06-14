@@ -5,7 +5,10 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 
+import src.com.dylanisawesome1.bukkit.btm.Herds.Herd;
+import src.com.dylanisawesome1.bukkit.btm.Herds.HerdEntity;
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
+import src.com.lenis0012.bukkit.btm.BeTheMob;
 
 public class PathfindingUtil {
 	/**
@@ -78,13 +81,17 @@ public class PathfindingUtil {
 	 * @return Node - the node that is the closest out of the list
 	 */
 	public static Node getLowestDistanceNode(ArrayList<Node> collection,
-			Location destination, EntityType entitytype) {
-		Node leastDist = collection.get(0);
+			Location destination, EntityType entitytype, ArrayList<Node> path) {
+			
+		Node leastDist = null;
 		for (Node node : collection) {
-			if (!isNodeObstructed(node, HerdUtil.getHeightInBlocks(entitytype), true)
-					&& distanceBetweenNodes(destination, node) < distanceBetweenNodes(
-							destination, leastDist)) {
+			if (!isNodeObstructed(node, HerdUtil.getHeightInBlocks(entitytype), true, path)) {
+				if (leastDist == null) leastDist = node; 
+				else if (distanceBetweenNodes(destination, node) < distanceBetweenNodes(
+							destination, leastDist)) 
+				{
 				leastDist = node;
+				}
 			}
 		}
 		return leastDist;
@@ -103,14 +110,17 @@ public class PathfindingUtil {
 		ArrayList<Node> pathlocs = new ArrayList<Node>();
 		Node curnode = endnode;
 		int its=0;
-		int maxits=5000;
-		startnode.setNodeBlock(getBlockGravity(startnode.getNodeBlock()));
-		while(!compareLocations(curnode.getLocation(), startnode.getLocation())) {
+		int maxits=50;
+		//startnode.setNodeBlock(getBlockGravity(startnode.getNodeBlock()));
+		while(distanceBetweenNodes(curnode.getLocation(), startnode)>2) {
 			
-			curnode = getLowestDistanceNode(getNeighboringNodes(curnode), startnode.getLocation(), type);
+			curnode = getLowestDistanceNode(getNeighboringNodes(curnode), startnode.getLocation(), type, pathlocs);
+			if(curnode==null)
+				return pathlocs;
 			pathlocs.add(curnode);
 			if(its>=maxits) {
-				break;
+				System.out.println("MAXITS");
+				return pathlocs;
 			}
 			its++;
 		}
@@ -129,18 +139,28 @@ public class PathfindingUtil {
 	 * 			  - Check for overhangs above this?
 	 * @return isObstructed - Is the node obstructed?
 	 */
-	public static boolean isNodeObstructed(Node node, int height, boolean checkforoverhang) {
-		if(node.getNodeBlock().getType().isSolid() /*&& node.getNodeBlock().getType() != Material.SNOW*/) {
-			return true;
-		}
-		if(checkforoverhang) {
-			for(int i=0;i<height-1;i++) {
-				Block tmpblock = node.getLocation().add(0, i, 0).getBlock();
-				if(tmpblock.getType().isSolid()) {
+	public static boolean isNodeObstructed(Node node, int height, boolean checkforoverhang, ArrayList<Node> path) {
+	
+		if(node.getNodeBlock().getType().isSolid() ) return true;
+		
+		if (path.contains(node)) return true;
+		
+		for(Herd herd : BeTheMob.instance.herds) {
+			for(HerdEntity entity : herd.getHerdMembers()) {
+				
+				if(distanceBetweenNodes(entity.getLocation().getBlock().getLocation(), node)<=1) {
 					return true;
 				}
 			}
 		}
+//		if(checkforoverhang) {
+//			for(int i=0;i<height-1;i++) {
+//				Block tmpblock = node.getLocation().add(0, i, 0).getBlock();
+//				if(tmpblock.getType().isSolid()) {
+//					return true;
+//				}
+//			}
+//		}
 		return false;
 	}
 	public static Block getBlockGravity(Block block) {

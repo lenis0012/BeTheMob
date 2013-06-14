@@ -2,6 +2,7 @@ package src.com.lenis0012.bukkit.btm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -54,7 +55,7 @@ public class BTMCommand implements CommandExecutor {
 								api.addDisguise(player, dis);
 								inf(player, "Succesfully diguised as a "+args[1]);
 								Herd herd = new Herd(dis.getDisguiseType(), player);
-								herd.populateHerd(5, 20);
+								herd.populateHerd(new Random().nextInt(7)+2, 20);
 								herd.spawnHerdMembers();
 								BeTheMob.instance.herds.add(herd);
 							}
