@@ -64,8 +64,10 @@ public class Herd {
 	public void populateHerd(int membercount, int radius) {
 		for(int i=0;i<membercount;i++) {
 			Random rand = new Random();
-			Location entityloc = new Location(leader.getWorld(), leader.getLocation().getX()+rand.nextInt(radius)-(radius/2), leader.getLocation().getY(), leader.getLocation().getZ()+rand.nextInt(radius)-(radius/2));
-			HerdEntity hentity = new HerdEntity(BeTheMob.instance.nextID--, entityloc, 0, BeTheMob.instance.disguises.get(leader.getName()).getDisguiseType(), leader);
+			Location entityloc = new Location(leader.getWorld(), leader.getLocation().getX()+rand.nextInt(radius)-(radius/2), 
+					leader.getLocation().getY(), leader.getLocation().getZ()+rand.nextInt(radius)-(radius/2));
+			HerdEntity hentity = new HerdEntity(BeTheMob.instance.nextID--, entityloc, 0, 
+					BeTheMob.instance.disguises.get(leader.getName()).getDisguiseType(), leader);
 			//hentity.nextDest = new Node(hentity.getLocation().getBlock());
 			addHerdMember(hentity);
 			

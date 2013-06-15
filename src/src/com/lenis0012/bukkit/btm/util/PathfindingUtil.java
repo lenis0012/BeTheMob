@@ -87,8 +87,8 @@ public class PathfindingUtil {
 		for (Node node : collection) {
 			if (!isNodeObstructed(node, HerdUtil.getHeightInBlocks(entitytype), true, path)) {
 				if (leastDist == null) leastDist = node; 
-				else if (distanceBetweenNodes(destination, node) < distanceBetweenNodes(
-							destination, leastDist)) leastDist = node;
+				else if (distanceBetweenNodes(destination, node) < 
+						distanceBetweenNodes(destination, leastDist)) leastDist = node;
 			}
 		}
 		return leastDist;
@@ -107,7 +107,8 @@ public class PathfindingUtil {
 		ArrayList<Node> pathlocs = new ArrayList<Node>();
 		Node curnode = endnode;
 		int its=0;
-		int maxits=1000;
+		int maxits=5000;
+		
 		//startnode.setNodeBlock(getBlockGravity(startnode.getNodeBlock()));
 		while(distanceBetweenNodes(curnode.getLocation(), startnode)>2) {
 			
@@ -117,7 +118,7 @@ public class PathfindingUtil {
 			pathlocs.add(curnode);
 			if(its>=maxits) {
 //				System.out.println("MAXITS");
-				return pathlocs;
+				return null;
 			}
 			its++;
 		}
@@ -145,7 +146,7 @@ public class PathfindingUtil {
 		for(Herd herd : BeTheMob.instance.herds) {
 			for(HerdEntity entity : herd.getHerdMembers()) {
 				
-				if(distanceBetweenNodes(entity.getLocation().getBlock().getLocation(), node)<=1) {
+				if(distanceBetweenNodes(entity.getLocation(), node)<=1) {
 					return true;
 				}
 			}
@@ -163,13 +164,13 @@ public class PathfindingUtil {
 	public static Block getBlockGravity(Block block) {
 		return block.getWorld().getHighestBlockAt(block.getLocation());
 	}
-	public static boolean compareLocations(Location loc1, Location loc2) {
-		double x1 = loc1.getX();
-		double x2 = loc2.getX();
-		double y1 = loc1.getY();
-		double y2 = loc2.getY();
-		double z1 = loc1.getZ();
-		double z2 = loc2.getZ();
-		return x1==x2 && y1 == y2 && z1 == z2;
-	}
+//	public static boolean compareLocations(Location loc1, Location loc2) {
+//		double x1 = loc1.getX();
+//		double x2 = loc2.getX();
+//		double y1 = loc1.getY();
+//		double y2 = loc2.getY();
+//		double z1 = loc1.getZ();
+//		double z2 = loc2.getZ();
+//		return x1==x2 && y1 == y2 && z1 == z2;
+//	}
 }

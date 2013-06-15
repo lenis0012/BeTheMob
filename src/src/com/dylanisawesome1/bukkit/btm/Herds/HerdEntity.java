@@ -238,23 +238,78 @@ public class HerdEntity {
 	 * @param to - the location to move to
 	 * @param moved - whether the entity moved, or simply changed pitch/yaw
 	 */
-	public void move(Location from, Location to, boolean moved) {
+	public void move(Location to, boolean moved) {
 		if(!spawned)
-			return;
-		
-		this.loc = to;
-		
+			return;		
+
+		//loc = loc.clone();
+		float fromX = (float) this.getLocation().getX();
+		float fromY =  (float) this.getLocation().getY();
+		float fromZ =  (float) this.getLocation().getZ();
+//    	System.out.println("from x" + fromX + " y " + fromY + " z " + fromZ);
+    	
+		float toX =  (float) to.getX();
+		float toY =  (float) to.getY();
+		float toZ =  (float) to.getZ();
+//    	System.out.println("To x" + toX + " y " + toY + " z " + toZ);
+    	 
 		if(moved) {
-			movement.update(to);
+			
+			this.movement.update(to);
+			
 			NetworkUtil.sendGlobalPacket(gen.getEntityMoveLookPacket(movement), to.getWorld());
-			this.setLocation(to);
-//			System.out.println("move:"+ from + " to " + to);
-		} else
-			NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), to.getWorld());
+						
+			this.getLocation().setX(toX);
+			this.getLocation().setY(toY);
+			this.getLocation().setZ(toZ);
+			
+		}	
+		 
+		// get location and inset yaw, reassign
 		
+		// Values of change in distance (make it relative)
+    	double dx = toX -fromX;
+    	double dy = toY- fromY;
+    	double dz = toZ - fromZ;
+    
+    	double yaw = 0.0;
+    	double pitch = 0.0;
+    	
+//        	System.out.println("dx" + dx + " dy " + dy + " dz " + dz);
+        	
+        
+        // Set yaw
+        if (dx != 0) {
+            // Set yaw start value based on dx
+            if (dx < 0) {
+                yaw = ((double) (1.5 * Math.PI));
+            } else {
+            	yaw = ((double) (0.5 * Math.PI));
+            }
+                
+            yaw= (yaw - (double) Math.atan(dz / dx));
+     
+        } else if (dz < 0) {
+            yaw= ((double) Math.PI);
+        }
+
+        // Get the distance from dx/dz
+        double dxz = Math.sqrt(Math.pow(dx, 2) + Math.pow(dz, 2));
+
+        // Set pitch
+        pitch = ((double) -Math.atan(dy / dxz));
+
+        // Set values, convert to degrees (invert the yaw since Bukkit uses a different yaw dimension format)
+        yaw = (-yaw * 180f / (double) Math.PI);
+        pitch = (pitch  * 180f / (double) Math.PI);
+        		
+		this.getLocation().setYaw((float) yaw);
+		this.getLocation().setPitch((float) pitch);		
+		
+		NetworkUtil.sendGlobalPacket(gen.getEntityLookPacket(), to.getWorld());
 		NetworkUtil.sendGlobalPacket(gen.getEntityHeadRotatePacket(), to.getWorld());
-	}
-	
+		
+	}	
 	/**
 	 * Teleport the entity
 	 * 
@@ -507,12 +562,12 @@ public class HerdEntity {
 	}
 	public void update(double delayBetweenUpdates) {
 		if(System.currentTimeMillis()-timeLastUpdated>=delayBetweenUpdates) {
+			timeLastUpdated=System.currentTimeMillis();
 			if(entityToAttack!=null && !entityToAttack.isDead()) {
 				if(PathfindingUtil.distanceBetweenNodes(getLocation(), new Node(entityToAttack.getLocation().getBlock()))<3) {
 					entityToAttack.damage(1);
 				}
 			}
-			timeLastUpdated=System.currentTimeMillis();
 		}
 	}
 }

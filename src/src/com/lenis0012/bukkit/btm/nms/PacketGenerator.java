@@ -123,7 +123,7 @@ public class PacketGenerator implements IPacketGenerator {
 			if (ent.getType() == EntityType.ENDER_DRAGON) {
 				yaw = (byte) (yaw - 128);
 			}
-			if (dis.getDisguiseType() == EntityType.CHICKEN) {
+			if (ent.getType() == EntityType.CHICKEN) {
 				pitch = (byte) (pitch * -1);
 			}
 
