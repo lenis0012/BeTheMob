@@ -30,10 +30,6 @@ public class Movement {
 		int newY = MathUtil.floor(loc.getY() * 32D);
 		int newZ = MathUtil.floor(loc.getZ() * 32D);
 		
-		System.out.println("old x" + oldX/32D + " y "+ oldY/32D + " Z " + oldZ/32D);
-		System.out.println("new x" + newX/32D + " y "+ newY/32D + " Z " + newZ/32D);
-		
-		
 		x = newX - oldX;
 		y = newY - oldY;
 		z = newZ - oldZ;

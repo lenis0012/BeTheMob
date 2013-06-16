@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -37,7 +38,7 @@ public class HerdEntity {
 	private LivingEntity entityToAttack;
 	BlockLoader loader;
 	private List<String> extras = new ArrayList<String>();
-	private ArrayList<Node> path = new ArrayList<Node>();
+	private ArrayList<Location> path = new ArrayList<Location>();
 	//Extras is currently unimplemented
 	private IPacketGenerator gen;
 	private Player leader;
@@ -544,14 +545,17 @@ public class HerdEntity {
 //	}
 	public Player getLeader() {
 		return leader;
+	} 
+	public void updateLeader() {
+		leader = Bukkit.getPlayer(leader.getName());
 	}
 	public void setLeader(Player leader) {
 		this.leader = leader;
 	}
-	public ArrayList<Node> getPath() {
+	public ArrayList<Location> getPath() {
 		return path;
 	}
-	public void setPath(ArrayList<Node> path) {
+	public void setPath(ArrayList<Location> path) {
 		this.path = path;
 	}
 	public LivingEntity getEntityToAttack() {
@@ -563,8 +567,9 @@ public class HerdEntity {
 	public void update(double delayBetweenUpdates) {
 		if(System.currentTimeMillis()-timeLastUpdated>=delayBetweenUpdates) {
 			timeLastUpdated=System.currentTimeMillis();
+			updateLeader();
 			if(entityToAttack!=null && !entityToAttack.isDead()) {
-				if(PathfindingUtil.distanceBetweenNodes(getLocation(), new Node(entityToAttack.getLocation().getBlock()))<3) {
+				if(PathfindingUtil.distanceBetweenLocs(getLocation(), entityToAttack.getLocation()) <3 ) {
 					entityToAttack.damage(1);
 				}
 			}

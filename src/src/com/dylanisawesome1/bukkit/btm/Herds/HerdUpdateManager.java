@@ -23,7 +23,7 @@ public class HerdUpdateManager {
 	public static Runnable runHerdUpdate(final ArrayList<Herd> herds, final long moveTimeout) {
 		return new Runnable() {
 			
-			public void run() {
+	public void run() {
 		for (Herd herd : herds) {
 				for (HerdEntity hentity : herd.getHerdMembers()) {
 					hentity.update(50);  
@@ -31,31 +31,32 @@ public class HerdUpdateManager {
 					if(System.currentTimeMillis()-hentity.timeLastMoved>=moveTimeout) {
 						hentity.timeLastMoved = System.currentTimeMillis();
 						
-						if(hentity.getEntityToAttack() != null) {
-							hentity.setPath(PathfindingUtil.getPathToLocation(
-									new Node(hentity.getLocation().getBlock()), 
-									new Node(hentity.getEntityToAttack().getLocation().getBlock()), 
-									hentity.getType()));
+						if(hentity.getEntityToAttack() != null) 
+						{
+							hentity.setPath(
+								PathfindingUtil.getPathToLocation(
+									hentity, 
+									hentity.getEntityToAttack().getLocation()));
 						}
 						
-						hentity.setPath(PathfindingUtil.getPathToLocation(
-								new Node(hentity.getLocation().getBlock()), 
-								new Node(hentity.getLeader().getLocation().getBlock()), 
-								hentity.getType()));
-						
-//						System.out.println("PATH: "+hentity.getEntityId());
-//						for(Node node : hentity.getPath()) {
-//							System.out.println(node.getLocation());
-//						}
+						hentity.setPath(
+							PathfindingUtil.getPathToLocation(
+								hentity, 
+								hentity.getLeader().getLocation())
+								);
+
+
 						if (hentity.getPath() != null){
 							int sz = hentity.getPath().size();	
 							if (sz>=2){
+								Location moveto = hentity.getPath().get(sz-2);
+								double d = PathfindingUtil.distanceBetweenLocs(moveto, hentity.getLeader().getLocation());
 								
-								//if (sz>40) System.out.println("MAX" + hentity.getEntityId() + "loc " + hentity.getLocation());
-								Location curr = hentity.getLocation();
-								hentity.move(hentity.getPath().get(sz-2).getLocation(), true);
-								hentity.setLocation(hentity.getPath().get(sz-2).getLocation());
-								hentity.refreshMovement();
+								if (d > 2.0 ){
+									hentity.move(moveto, true);
+									hentity.setLocation(moveto);
+									hentity.refreshMovement();
+								}
 							}
 						}							
 						
