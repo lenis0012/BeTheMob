@@ -18,6 +18,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import src.com.dylanisawesome1.bukkit.btm.Herds.Herd;
+import src.com.dylanisawesome1.bukkit.btm.Herds.HerdEntity;
 import src.com.dylanisawesome1.bukkit.btm.Herds.HerdUpdateManager;
 import src.com.lenis0012.bukkit.btm.api.Api;
 import src.com.lenis0012.bukkit.btm.api.Disguise;
@@ -44,7 +45,7 @@ public class BeTheMob extends JavaPlugin {
 	public ArrayList<Herd> herds = new ArrayList<Herd>();
 	private static final int MAX_VERSION = 152;
 	private static final int MIN_VERSION = 151;
-	
+	HashMap<String, HerdEntity> selectedentities = new HashMap<String,HerdEntity>();
 	@Override
 	public void onEnable() {
 		instance = this;

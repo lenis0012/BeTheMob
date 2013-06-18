@@ -15,7 +15,6 @@ public class Herd {
 	private ArrayList<HerdEntity> herdMembers = new ArrayList<HerdEntity>();
 	private EntityType herdType;
 	private Player leader;
-	//TODO: Add A* path-finding algorithm
 	public Herd(EntityType type, Player leader) {
 		this.herdType=type;
 		setLeader(leader);
@@ -55,6 +54,7 @@ public class Herd {
 	 */
 	public void addHerdMember(HerdEntity entity) {
 		herdMembers.add(entity);
+		entity.spawn(entity.getLocation().getWorld());
 	}
 	/**
 	 * Populate the herd with members.
@@ -67,7 +67,7 @@ public class Herd {
 			Location entityloc = new Location(leader.getWorld(), leader.getLocation().getX()+rand.nextInt(radius)-(radius/2), 
 					leader.getLocation().getY(), leader.getLocation().getZ()+rand.nextInt(radius)-(radius/2));
 			HerdEntity hentity = new HerdEntity(BeTheMob.instance.nextID--, entityloc, 0, 
-					BeTheMob.instance.disguises.get(leader.getName()).getDisguiseType(), leader);
+					herdType, leader);
 			addHerdMember(hentity);
 			
 		}

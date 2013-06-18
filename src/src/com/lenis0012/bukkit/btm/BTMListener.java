@@ -6,6 +6,7 @@ import net.minecraft.server.v1_5_R3.DamageSource;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -51,9 +52,19 @@ public class BTMListener implements Listener {
 			evt.getEntityInteractedWith().playHurtSound();
 			evt.getEntityInteractedWith().knockback();
 			evt.getEntityInteractedWith().health-=HerdUtil.getDamageDealt(evt.getPlayer().getItemInHand());
-			System.out.println(evt.getEntityInteractedWith().health);
 			if(evt.getEntityInteractedWith().health<=0) {
 				evt.getEntityInteractedWith().kill();
+			}
+		} else {
+			if(evt.getEntityInteractedWith().getLeader().getName() == evt.getPlayer().getName()) {
+					BeTheMob.instance.selectedentities.put(evt.getPlayer().getName(), evt.getEntityInteractedWith());
+			}
+			if(evt.getEntityInteractedWith().getType() == EntityType.COW && evt.getPlayer().getItemInHand().getType() == Material.BUCKET) {
+				evt.getPlayer().getItemInHand().setType(Material.MILK_BUCKET);
+			}
+			if(evt.getEntityInteractedWith().getType() == EntityType.MAGMA_CUBE && evt.getPlayer().getItemInHand().getType() == Material.BUCKET) {
+				evt.getPlayer().getItemInHand().setType(Material.LAVA_BUCKET);
+				//Lawl :D
 			}
 		}
 	}

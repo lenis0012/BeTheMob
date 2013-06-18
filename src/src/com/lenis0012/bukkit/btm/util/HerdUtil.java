@@ -3,11 +3,13 @@ package src.com.lenis0012.bukkit.btm.util;
 import java.util.ArrayList;
 
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import src.com.dylanisawesome1.bukkit.btm.Herds.Herd;
 import src.com.dylanisawesome1.bukkit.btm.Herds.HerdEntity;
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
+import src.com.lenis0012.bukkit.btm.BeTheMob;
 
 
 public class HerdUtil {
@@ -24,6 +26,14 @@ public class HerdUtil {
 			}
 		}
 		return entity;
+	}
+	public static Herd getHerdFromPlayer(Player player) {
+		for(Herd herd : BeTheMob.instance.herds) {
+			if(herd.getLeader().getName() == player.getName()) {
+				return herd;
+			}
+		}
+		return null;
 	}
 	public static int getDamageDealt(ItemStack item) {
 		switch(item.getType()) {
