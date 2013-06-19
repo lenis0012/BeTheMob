@@ -26,7 +26,6 @@ public class HerdUpdateManager {
 	public void run() {
 		for (Herd herd : herds) {
 				for (HerdEntity hentity : herd.getHerdMembers()) {
-					hentity.update(50);  
 					
 					if(System.currentTimeMillis()-hentity.timeLastMoved>=moveTimeout) {
 						hentity.timeLastMoved = System.currentTimeMillis();
@@ -61,6 +60,7 @@ public class HerdUpdateManager {
 						}							
 						
 					} 
+					hentity.update(50);  
 				}
 			}
 			}

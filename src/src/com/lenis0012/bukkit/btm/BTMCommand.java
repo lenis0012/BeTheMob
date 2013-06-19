@@ -7,6 +7,7 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -203,7 +204,9 @@ public class BTMCommand implements CommandExecutor {
 						}
 					}
 				}
-			} else
+			} else if(args[0].equalsIgnoreCase("debug")) {
+				player.getWorld().spawnFallingBlock(player.getLocation(), Material.BEDROCK, (byte) 0);
+			}else			
 				err(player,
 						"Invalid argument, try mob, player, vehicle, list or off");
 

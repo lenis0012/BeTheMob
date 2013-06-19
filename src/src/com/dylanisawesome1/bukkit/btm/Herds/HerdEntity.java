@@ -581,7 +581,7 @@ public class HerdEntity {
 	}
 	public void specialAttack(LivingEntity target) {
 		if(getType() == EntityType.PIG || getType() == EntityType.COW || getType() == EntityType.SHEEP) {
-			target.setVelocity(target.getVelocity().add(new Vector(0.5,1,0.5)));
+			target.setVelocity(target.getVelocity().add(new Vector(0.5,0.8,0.5)));
 		}
 	}
 }
