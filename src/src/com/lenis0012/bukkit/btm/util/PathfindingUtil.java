@@ -169,7 +169,9 @@ public class PathfindingUtil {
 		
 		// cant move into a solid block
 		if (loc.getBlock().getType().isSolid()) return true;
-		
+		Block below1 = loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY()-1, loc.getBlockZ());
+		Block below2 = loc.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY()-2, loc.getBlockZ());
+		if(!below1.getType().isSolid() && !below2.getType().isSolid()) return true;
 		//can't move where you already did move
 		if (path.contains(loc)) return true;
 		

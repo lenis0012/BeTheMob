@@ -37,14 +37,14 @@ public class HerdUpdateManager {
 								PathfindingUtil.getPathToLocation(
 									hentity, 
 									hentity.getEntityToAttack().getLocation()));
-						}
+						} else {
 						
 						hentity.setPath(
 							PathfindingUtil.getPathToLocation(
 								hentity, 
 								hentity.getLeader().getLocation())
 								);
-
+						}
 
 						if (hentity.getPath() != null){
 							int sz = hentity.getPath().size();	

@@ -13,6 +13,8 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.BlockLoader;
 import src.com.dylanisawesome1.bukkit.btm.Herds.Pathfinding.Node;
 import src.com.lenis0012.bukkit.btm.BeTheMob;
@@ -570,9 +572,16 @@ public class HerdEntity {
 			updateLeader();
 			if(entityToAttack!=null && !entityToAttack.isDead()) {
 				if(PathfindingUtil.distanceBetweenLocs(getLocation(), entityToAttack.getLocation()) <3 ) {
-					entityToAttack.damage(1);
+					Random rand = new Random();
+					int attack = rand.nextInt(3);
+					specialAttack(entityToAttack);
 				}
 			}
+		}
+	}
+	public void specialAttack(LivingEntity target) {
+		if(getType() == EntityType.PIG || getType() == EntityType.COW || getType() == EntityType.SHEEP) {
+			target.setVelocity(target.getVelocity().add(new Vector(0.5,1,0.5)));
 		}
 	}
 }
