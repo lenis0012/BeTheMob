@@ -204,9 +204,10 @@ public class BTMCommand implements CommandExecutor {
 						}
 					}
 				}
-			} else if(args[0].equalsIgnoreCase("debug")) {
-				player.getWorld().spawnFallingBlock(player.getLocation(), Material.BEDROCK, (byte) 0);
-			}else			
+				
+			} //else if(args[0].equalsIgnoreCase("debug")) {
+//			}
+			else			
 				err(player,
 						"Invalid argument, try mob, player, vehicle, list or off");
 
