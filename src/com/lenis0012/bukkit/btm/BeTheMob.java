@@ -34,7 +34,7 @@ public class BeTheMob extends PluginBase {
 		
 		//Register listeners and commands
 		register(new BTMListener());
-		register(this.commandSource = new BTMCommand());
+		register(this.commandSource = new BTMCommand(), "btm");
 	}
 	
 	@Override
