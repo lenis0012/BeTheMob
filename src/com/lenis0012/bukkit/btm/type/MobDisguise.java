@@ -46,6 +46,6 @@ public class MobDisguise extends Disguise {
 		packet.write(PacketType.OUT_ENTITY_SPAWN_LIVING.headYaw, yaw);
 		packet.setDatawatcher(dataWatcher);
 		
-		return null;
+		return packet;
 	}
 }
