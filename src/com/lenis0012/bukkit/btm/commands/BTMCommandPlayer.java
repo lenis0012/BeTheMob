@@ -9,6 +9,7 @@ public class BTMCommandPlayer extends BTMSubCommand {
 		this.setMinArgs(1);
 		this.setArguments("<name>");
 		this.setDescription("Disguise as a player.");
+		this.setPermission("btm.disguise.player");
 	}
 
 	@Override

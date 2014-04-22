@@ -4,14 +4,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.bergerkiller.bukkit.common.protocol.CommonPacket;
+import com.bergerkiller.bukkit.common.wrappers.DataWatcher;
 import com.lenis0012.bukkit.btm.BeTheMob;
 import com.lenis0012.bukkit.btm.DisguiseManager;
 
 public abstract class Disguise {
 	protected Player player;
+	protected DataWatcher dataWatcher;
 	
 	public Disguise(Player player) {
 		this.player = player;
+		this.dataWatcher = new DataWatcher();
 	}
 	
 	public Player getPlayer() {

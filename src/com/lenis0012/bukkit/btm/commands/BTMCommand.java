@@ -14,6 +14,7 @@ public class BTMCommand implements CommandExecutor {
 	
 	public BTMCommand() {
 		addSubCommand(new BTMCommandPlayer());
+		addSubCommand(new BTMCommandMob());
 	}
 	
 	public void addSubCommand(BTMSubCommand subCommand) {
