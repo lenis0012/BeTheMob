@@ -1,14 +1,8 @@
 name: BeTheMob
-version: 1.12
-<<<<<<< HEAD
+version: 2.0
 main: com.lenis0012.bukkit.btm.BeTheMob
 authors: [lenis0012]
 depend: [BKCommonLib]
-=======
-main: src.com.lenis0012.bukkit.btm.BeTheMob
-authors: [lenis0012, bowser123467]
-softdepend: [ProtocolLib]
->>>>>>> 949f9867ebe02b8d02f7b8565667b871115c4647
 commands:
   btm:
     description: BeTheMob main command.

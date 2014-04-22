@@ -33,7 +33,7 @@ public class BeTheMob extends PluginBase {
 		setDisguiseManager(new DisguiseManager());
 		
 		//Register listeners and commands
-		register();
+		register(new BTMListener());
 		register(this.commandSource = new BTMCommand());
 	}
 	
